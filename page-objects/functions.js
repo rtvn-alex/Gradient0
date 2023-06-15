@@ -17,3 +17,11 @@ export function enterGradient(){
     clickAnElement('Визуализации')
     clickAnElement('Lifting cost')
 }
+
+export function waitForElement(el){
+    cy.get(el, {timeout: 10000}).should('exist')
+}
+
+export function showElement(el){
+    cy.get(el, {timeout: 10000}).should('be.visible')
+}
