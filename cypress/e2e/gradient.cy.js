@@ -19,6 +19,7 @@ describe('demo actions', () => {
 
 
     it('should turn the screens through', () => {
+        //checks for every diagramm on every screen to appear
         clickAnElement('Визуализации')
         clickAnElement('Аналитика')
         showElement(Cypress.env('diagramSelector'))
