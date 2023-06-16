@@ -45,6 +45,16 @@ describe('demo actions', () => {
             waitForElement(Cypress.env('diagramSelectorAlternative') + `:nth-of-type(${i}n)`)
         }
     })
+
+    it.only('should switch colour themes', () => {
+        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
+        cy.get("span[title='Переключить тему']").click()
+        cy.wait(1500)
+        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')
+        cy.get("span[title='Переключить тему']").click()
+        cy.wait(1500)
+        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
+    })
 })
 
 
