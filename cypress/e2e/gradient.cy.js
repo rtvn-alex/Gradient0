@@ -6,7 +6,9 @@ import {
     clickAnElement,
     enterGradient,
     showElement,
-    waitForElement
+    waitForElement,
+    searchProcessInHeader,
+    searchArticleInHeader
 } from "../../page-objects/functions.js"
 
 
@@ -67,7 +69,7 @@ describe('demo actions', () => {
         cy.get('.GBarChart__Main .GBarChart__XAxisBlock.first').should('contain.text', 'Восток')
     })
 
-    it.only('should change a subactive', () => {
+    it('should change a subactive', () => {
         clickAnElement('Выявление')
         cy.wait(3000)
         clickAnElement('Не выбрано')
@@ -75,4 +77,27 @@ describe('demo actions', () => {
         cy.get('div.MainPane__TagsGroup span:nth-child(1) span').should('have.text', 'Новопортовское')
     })
 
+    it('should switch the processes', () => {
+        clickAnElement('Аналитика')
+        cy.wait(3000)
+        searchProcessInHeader('Подъем УВС')
+        searchProcessInHeader('ППД')
+        searchProcessInHeader('Подготовка нефти')
+        searchProcessInHeader('Подготовка газа')
+        searchProcessInHeader('Транспортировка УВС')
+        searchProcessInHeader('Все процессы')
+    })
+
+    it('should switch the articles', () => {
+        clickAnElement('Выявление')
+        cy.wait(3000)
+        searchArticleInHeader('Материалы')
+        searchArticleInHeader('Электроэнергия')
+        searchArticleInHeader('Персонал')
+        //searchArticleInHeader('Транспорт')
+        searchArticleInHeader('ГНО')
+        searchArticleInHeader('НКТ')
+        searchArticleInHeader('Прочие')
+        searchArticleInHeader('Все статьи затрат')
+    })
 })

@@ -25,3 +25,15 @@ export function waitForElement(el){
 export function showElement(el){
     cy.get(el, {timeout: 10000}).should('be.visible')
 }
+
+export function searchProcessInHeader(name){
+    clickAnElement(name)
+    cy.get('div.Header div').should('contain.text', name)
+}
+
+export function searchArticleInHeader(name){
+    clickAnElement(name)
+    cy.get('li.GBreadcrumbs__Item span').should('contain.text', name)
+}
+
+//li.GBreadcrumbs__Item span
