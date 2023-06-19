@@ -46,7 +46,7 @@ describe('demo actions', () => {
         }
     })
 
-    it.only('should switch colour themes', () => {
+    it('should switch colour themes', () => {
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
         cy.get("span[title='Переключить тему']").click()
         cy.wait(1500)
@@ -55,6 +55,24 @@ describe('demo actions', () => {
         cy.wait(1500)
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
     })
+
+    it('should change an active', () => {
+        clickAnElement('Аналитика')
+        cy.wait(1500)
+        clickAnElement('Ямал')
+        clickAnElement('Хантос')
+        cy.get('.GBarChart__Main .GBarChart__XAxisBlock.first').should('contain.text', 'Хантос')
+        clickAnElement('Хантос')
+        clickAnElement('Восток')
+        cy.get('.GBarChart__Main .GBarChart__XAxisBlock.first').should('contain.text', 'Восток')
+    })
+
+    it.only('should change a subactive', () => {
+        clickAnElement('Выявление')
+        cy.wait(3000)
+        clickAnElement('Не выбрано')
+        clickAnElement('Новопортовское')
+        cy.get('div.MainPane__TagsGroup span:nth-child(1) span').should('have.text', 'Новопортовское')
+    })
+
 })
-
-
