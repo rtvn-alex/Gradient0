@@ -100,4 +100,12 @@ describe('demo actions', () => {
         searchArticleInHeader('Прочие')
         searchArticleInHeader('Все статьи затрат')
     })
+
+    it('should open the Download window', () => {
+        clickAnElement('Аналитика')
+        cy.wait(1500)
+        cy.get('div.UserBadge__Name', {timeout:10000}).click()
+        clickAnElement('Выгрузка')
+        cy.get('.OpenModalContainer__Content .UnloadingModal')
+    })
 })
