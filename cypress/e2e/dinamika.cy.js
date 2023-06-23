@@ -24,12 +24,6 @@ describe('actions', () => {
     it('should check the page and elements', () => {
         cy.get('section.LineChart', )    //есть только у графика и только в режиме "Значения" 
         cy.get('li.LineChart__Title').should('contain.text', 'кв')
-        if (cy.contains('руб./тн').getAttribute('color') == 'rgb(0, 32, 51)') {
-            cy.log('YESSSS')
-        }
-        else {
-            cy.log('NOOOOOOPE')
-        }
-        
+        cy.contains('руб./тн')
     })
 })

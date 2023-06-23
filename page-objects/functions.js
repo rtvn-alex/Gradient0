@@ -36,4 +36,12 @@ export function searchArticleInHeader(name){
     cy.get('li.GBreadcrumbs__Item span').should('contain.text', name)
 }
 
+export function switchLeftPaneElements(headerName, list){
+    //нужно будет дополнить проверкой на активность элемента
+    for (el of list) {
+        clickAnElement(el)
+        cy.get(headerName).should('contain.text', 'el')
+    }
+}
+
 //li.GBreadcrumbs__Item span
