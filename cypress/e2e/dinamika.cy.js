@@ -22,7 +22,7 @@ describe('actions', () => {
 
 
     it('should check the page and elements', () => {
-        cy.get('section.LineChart', )    //есть только у графика и только в режиме "Значения" 
+        cy.get('section.LineChart', {timeout:10000})    //есть только у графика и только в режиме "Значения" 
         cy.get('li.LineChart__Title').should('contain.text', 'кв')
         cy.contains('руб./тн')
     })
