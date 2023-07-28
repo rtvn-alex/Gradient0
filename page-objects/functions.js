@@ -15,7 +15,7 @@ export function clickAnElement(text) {
 
 export function enterGradient(){
     clickAnElement('Визуализации')
-    clickAnElement('Lifting cost')
+    // clickAnElement('Динамика метрик')
 }
 
 export function waitForElement(el){

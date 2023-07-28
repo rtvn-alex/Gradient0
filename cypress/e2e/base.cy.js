@@ -23,12 +23,16 @@ describe('demo actions', () => {
     it.only('should turn the screens through', () => {
         //checks for every diagramm on every screen to appear
         clickAnElement('Визуализации')
+        /*
+        Дашборд временно скрыт
+
         clickAnElement('Аналитика')
         showElement(Cypress.env('diagramSelector'))
         for (let i of ['2', '3']){
             waitForElement(Cypress.env('diagramSelector') + `:nth-of-type(${i}n)`)
         }
         cy.wait(1500)
+        */
         clickAnElement('Динамика метрик')
         showElement(Cypress.env('diagramSelector'))
         cy.wait(1500)
