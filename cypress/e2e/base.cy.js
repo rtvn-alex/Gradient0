@@ -20,7 +20,7 @@ describe('demo actions', () => {
     })
 
 
-    it.only('should turn the screens through', () => {
+    it('should turn the screens through', () => {
         //checks for every diagramm on every screen to appear
         clickAnElement('Визуализации')
         /*
@@ -84,25 +84,17 @@ describe('demo actions', () => {
     it('should switch the processes', () => {
         clickAnElement('Аналитика')
         cy.wait(3000)
-        searchProcessInHeader('Подъем УВС')
-        searchProcessInHeader('ППД')
-        searchProcessInHeader('Подготовка нефти')
-        searchProcessInHeader('Подготовка газа')
-        searchProcessInHeader('Транспортировка УВС')
-        searchProcessInHeader('Все процессы')
+        Cypress.env('processes').forEach(el => {
+            searchProcessInHeader(el)
+        })
     })
 
-    it('should switch the articles', () => {
-        clickAnElement('Выявление')
+    it.only('should switch the articles', () => {
+        clickAnElement('Аналитика')
         cy.wait(3000)
-        searchArticleInHeader('Материалы')
-        searchArticleInHeader('Электроэнергия')
-        searchArticleInHeader('Персонал')
-        //searchArticleInHeader('Транспорт')
-        searchArticleInHeader('ГНО')
-        searchArticleInHeader('НКТ')
-        searchArticleInHeader('Прочие')
-        searchArticleInHeader('Все статьи затрат')
+        Cypress.env('articles').forEach(el => {
+            searchArticleInHeader(el)
+        })
     })
 
     it('should open the Download window', () => {

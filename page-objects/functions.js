@@ -33,7 +33,9 @@ export function searchProcessInHeader(name){
 
 export function searchArticleInHeader(name){
     clickAnElement(name)
-    cy.get('li.GBreadcrumbs__Item span').should('contain.text', name)
+    cy.get('div.GradientVizel__Title', {timeout: 6000}).should('contain.text', name)
+    
+    //cy.get('li.GBreadcrumbs__Item span').should('contain.text', name)        div.GradientVizel__Title     div.Header div:first-child
 }
 
 export function switchLeftPaneElements(headerName, list){
