@@ -20,6 +20,7 @@ describe('actions', () => {
         enterGradient()
         clickAnElement('Динамика')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_9/data?elDynamicChildren').as('elDynamicChildren')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_9/data?elDynamic').as('elDynamic')
     })
 
 
@@ -77,7 +78,36 @@ describe('actions', () => {
         cy.get('.SwitchButtons:last-of-type > :first-child').click()
         cy.contains(' кв. ').should('exist')
     })
-       
+    
+    
+    it('should check lines width changes after changing of actives and subactives', () => {
+        clickAnElement('Ямал')
+        clickAnElement('СН-МНГ')
+        cy.get('div.LineChart__Lines line[stroke="#108E9C"]').should('have.attr', 'stroke-width').and('equal', '7px')
+    })
+
+
+    it.only('should check changes after navigating the transport article', () => {
+
+        // Нужно обернуть это в функцию
+
+        cy.wait('@elDynamic')
+        clickAnElement('Зимние дороги')
+        cy.wait('@elDynamic').then((xhr) => {
+            let data = xhr.response.body;
+
+            if (String(xhr.response.headers['content-type']).startsWith('application/stream+json')) {
+                if (typeof data === 'string') {
+                    data = data.split('\n').filter((line) => !!line).map((line) => JSON.parse(line));
+                } else if (data && (typeof data === 'object') && !Array.isArray(data)) {
+                    data = [data];
+                }
+            }
+            cy.log(xhr.request.body.filters.cost_sub_categories_id)
+            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq("113")
+            expect(data[0]).to.have.property('title', "Зимние дороги")
+        })
+    })
 
     /*
 Здесь я пытался написать тест, в котором бы исследовалось изменение положения элементов графика при изменении размерности.

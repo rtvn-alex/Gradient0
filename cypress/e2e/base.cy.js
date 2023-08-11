@@ -50,6 +50,7 @@ describe('demo actions', () => {
         cy.wait(1500)
     })
 
+
     it('should switch colour themes', () => {
         clickAnElement('Аналитика')
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')
@@ -60,6 +61,7 @@ describe('demo actions', () => {
         cy.wait(1500)
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')
     })
+
 
     it('should change an active', () => {
         clickAnElement('Аналитика')
@@ -72,6 +74,7 @@ describe('demo actions', () => {
         cy.get('.GBarChart__Main .GBarChart__XAxisBlock.first').should('contain.text', 'Восток')
     })
 
+
     it('should change a subactive', () => {
         clickAnElement('Оценка')
         cy.wait(3000)
@@ -79,6 +82,7 @@ describe('demo actions', () => {
         clickAnElement('Новопортовское')
         cy.get('div.MainPane__TagsGroup span:nth-child(1) span').should('have.text', 'Новопортовское')
     })
+
 
     it.skip('should switch the processes', () => {
         // переведено в тест 'should switch the processes and articles'
@@ -89,6 +93,7 @@ describe('demo actions', () => {
         })
     })
 
+
     it.skip('should switch the articles', () => {
         // переведено в тест 'should switch the processes and articles'
         clickAnElement('Аналитика')
@@ -98,6 +103,7 @@ describe('demo actions', () => {
         })
     })
 
+
     it('should open the Download window', () => {
         clickAnElement('Аналитика')
         cy.wait(1500)
@@ -106,6 +112,7 @@ describe('demo actions', () => {
         cy.get('.OpenModalContainer__Content .UnloadingModal')
     })
 
+    
     it('should switch the processes and articles', () => {
         clickAnElement('Аналитика')
         cy.wait(3000)
