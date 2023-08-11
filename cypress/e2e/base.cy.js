@@ -8,7 +8,8 @@ import {
     showElement,
     waitForElement,
     searchProcessInHeader,
-    searchArticleInHeader
+    searchArticleInHeader,
+    switchLeftPaneElements
 } from "../../page-objects/functions.js"
 
 
@@ -21,45 +22,43 @@ describe('demo actions', () => {
 
 
     it('should turn the screens through', () => {
-        //checks for every diagramm on every screen to appear
-        clickAnElement('Визуализации')
-        /*
-        Дашборд временно скрыт
-
-        clickAnElement('Аналитика')
-        showElement(Cypress.env('diagramSelector'))
-        for (let i of ['2', '3']){
-            waitForElement(Cypress.env('diagramSelector') + `:nth-of-type(${i}n)`)
-        }
-        cy.wait(1500)
-        */
-        clickAnElement('Динамика метрик')
-        showElement(Cypress.env('diagramSelector'))
-        cy.wait(1500)
-        clickAnElement('Выявление эталонов')
+        clickAnElement('Оценка потенциала')
         showElement(Cypress.env('diagramSelectorAlternative'))
         cy.wait(1500)
-        clickAnElement('Оценка потенциала')
-        showElement(Cypress.env('diagramSelector'))
-        cy.wait(1500)
-        clickAnElement('анализ')
-        showElement(Cypress.env('diagramSelector'))
+        clickAnElement('Моделирование')
+        showElement(Cypress.env('diagramSelectorAlternative'))
         cy.wait(1500)
         clickAnElement('Мониторинг')
         showElement(Cypress.env('diagramSelectorAlternative'))
         for (let i of ['2', '3', '4']){
             waitForElement(Cypress.env('diagramSelectorAlternative') + `:nth-of-type(${i}n)`)
         }
+        clickAnElement('...')    // button.AppButton.SubMenuButton
+        clickAnElement('Аналитика')
+        showElement(Cypress.env('diagramSelector'))
+        for (let i of ['2', '3']){
+            waitForElement(Cypress.env('diagramSelector') + `:nth-of-type(${i}n)`)
+        }
+        cy.wait(1500)
+        clickAnElement('...')
+        clickAnElement('Динамика метрик')
+        showElement(Cypress.env('diagramSelectorAlternative'))
+        cy.wait(1500)
+        clickAnElement('...')
+        clickAnElement('анализ')
+        showElement(Cypress.env('diagramSelectorAlternative'))
+        cy.wait(1500)
     })
 
     it('should switch colour themes', () => {
+        clickAnElement('Аналитика')
+        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')
+        cy.get(".DsShellHeader__ThemeSwitcher>svg").click()
+        cy.wait(1500)
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
-        cy.get("span[title='Переключить тему']").click()
+        cy.get(".DsShellHeader__ThemeSwitcher>svg").click()
         cy.wait(1500)
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')
-        cy.get("span[title='Переключить тему']").click()
-        cy.wait(1500)
-        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
     })
 
     it('should change an active', () => {
@@ -74,14 +73,15 @@ describe('demo actions', () => {
     })
 
     it('should change a subactive', () => {
-        clickAnElement('Выявление')
+        clickAnElement('Оценка')
         cy.wait(3000)
         clickAnElement('Не выбрано')
         clickAnElement('Новопортовское')
         cy.get('div.MainPane__TagsGroup span:nth-child(1) span').should('have.text', 'Новопортовское')
     })
 
-    it('should switch the processes', () => {
+    it.skip('should switch the processes', () => {
+        // переведено в тест 'should switch the processes and articles'
         clickAnElement('Аналитика')
         cy.wait(3000)
         Cypress.env('processes').forEach(el => {
@@ -89,7 +89,8 @@ describe('demo actions', () => {
         })
     })
 
-    it.only('should switch the articles', () => {
+    it.skip('should switch the articles', () => {
+        // переведено в тест 'should switch the processes and articles'
         clickAnElement('Аналитика')
         cy.wait(3000)
         Cypress.env('articles').forEach(el => {
@@ -103,5 +104,12 @@ describe('demo actions', () => {
         cy.get('div.UserBadge__Name', {timeout:10000}).click()
         clickAnElement('Выгрузка')
         cy.get('.OpenModalContainer__Content .UnloadingModal')
+    })
+
+    it('should switch the processes and articles', () => {
+        clickAnElement('Аналитика')
+        cy.wait(3000)
+        switchLeftPaneElements('div.Header div', Cypress.env('processes'))
+        switchLeftPaneElements('div.GradientVizel__Title', Cypress.env('articles'))
     })
 })

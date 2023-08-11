@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 
+
 import {
     navigate,
     auth,
@@ -76,6 +77,7 @@ describe('actions', () => {
         cy.get('.SwitchButtons:last-of-type > :first-child').click()
         cy.contains(' кв. ').should('exist')
     })
+       
 
     /*
 Здесь я пытался написать тест, в котором бы исследовалось изменение положения элементов графика при изменении размерности.

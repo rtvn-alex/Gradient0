@@ -15,7 +15,6 @@ export function clickAnElement(text) {
 
 export function enterGradient(){
     clickAnElement('Визуализации')
-    // clickAnElement('Динамика метрик')
 }
 
 export function waitForElement(el){
@@ -27,23 +26,25 @@ export function showElement(el){
 }
 
 export function searchProcessInHeader(name){
-    clickAnElement(name)
-    cy.get('div.Header div').should('contain.text', name)
+    // Не используется
+    Cypress.env('processes').forEach(el => {
+        clickAnElement(name)
+        cy.get('div.Header div', ).should('contain.text', el)
+    })
 }
 
 export function searchArticleInHeader(name){
-    clickAnElement(name)
-    cy.get('div.GradientVizel__Title', {timeout: 6000}).should('contain.text', name)
-    
-    //cy.get('li.GBreadcrumbs__Item span').should('contain.text', name)        div.GradientVizel__Title     div.Header div:first-child
+    // Не используется    
+    Cypress.env('articles').forEach(el => {
+        clickAnElement(name)
+        cy.get('div.GradientVizel__Title', {timeout: 6000}).should('contain.text', el)
+    })
 }
 
 export function switchLeftPaneElements(headerName, list){
-    //нужно будет дополнить проверкой на активность элемента
-    for (el of list) {
+    //проверка на активность элемента (?)
+    list.forEach(el => {
         clickAnElement(el)
-        cy.get(headerName).should('contain.text', 'el')
-    }
+        cy.get(headerName).should('contain.text', el)
+    })
 }
-
-//li.GBreadcrumbs__Item span
