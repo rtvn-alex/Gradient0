@@ -48,3 +48,31 @@ export function switchLeftPaneElements(headerName, list){
         cy.get(headerName).should('contain.text', el)
     })
 }
+
+
+export function parseToJSON(xhr){
+    // парсинг stream+json в json
+    let data = xhr.response.body
+    if (String(xhr.response.headers['content-type']).startsWith('application/stream+json')) {
+        if (typeof data === 'string') {
+            data = data.split('\n').filter((line) => !!line).map((line) => JSON.parse(line));
+        } else if (data && (typeof data === 'object') && !Array.isArray(data)) {
+            data = [data];
+        }
+    }
+    return data
+}
+
+
+/*
+export function parseToJSON(xhr, data){
+    // парсинг stream+json в json
+    if (String(xhr.response.headers['content-type']).startsWith('application/stream+json')) {
+        if (typeof data === 'string') {
+            data = data.split('\n').filter((line) => !!line).map((line) => JSON.parse(line));
+        } else if (data && (typeof data === 'object') && !Array.isArray(data)) {
+            data = [data];
+        }
+    }
+    return data
+} */

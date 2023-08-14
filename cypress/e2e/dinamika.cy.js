@@ -6,10 +6,7 @@ import {
     auth,
     clickAnElement,
     enterGradient,
-    showElement,
-    waitForElement,
-    searchProcessInHeader,
-    searchArticleInHeader
+    parseToJSON
 } from "../../page-objects/functions.js"
 
 
@@ -36,18 +33,8 @@ describe('actions', () => {
         cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
         clickAnElement('тыс.руб./скв.')
         cy.wait('@elDynamicChildren').then((xhr) => {
-            let data = xhr.response.body;
-
-            if (String(xhr.response.headers['content-type']).startsWith('application/stream+json')) {
-                if (typeof data === 'string') {
-                    data = data.split('\n').filter((line) => !!line).map((line) => JSON.parse(line));
-                } else if (data && (typeof data === 'object') && !Array.isArray(data)) {
-                    data = [data];
-                }
-            }
-            // cy.log(data)
-        expect(xhr.request.body.filters.unit_id[1]).to.be.eq(177)
-        expect(data[0]).to.have.property('unit', "тыс.руб./скв.")
+            expect(xhr.request.body.filters.unit_id[1]).to.be.eq(177)
+            expect(parseToJSON(xhr)[0]).to.have.property('unit', "тыс.руб./скв.")
         })
     })
 
@@ -87,27 +74,16 @@ describe('actions', () => {
     })
 
 
-    it.only('should check changes after navigating the transport article', () => {
-
-        // Нужно обернуть это в функцию
-
+    it('should check changes after navigating the transport article', () => {
         cy.wait('@elDynamic')
         clickAnElement('Зимние дороги')
         cy.wait('@elDynamic').then((xhr) => {
-            let data = xhr.response.body;
-
-            if (String(xhr.response.headers['content-type']).startsWith('application/stream+json')) {
-                if (typeof data === 'string') {
-                    data = data.split('\n').filter((line) => !!line).map((line) => JSON.parse(line));
-                } else if (data && (typeof data === 'object') && !Array.isArray(data)) {
-                    data = [data];
-                }
-            }
             cy.log(xhr.request.body.filters.cost_sub_categories_id)
             expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq("113")
-            expect(data[0]).to.have.property('title', "Зимние дороги")
+            expect(parseToJSON(xhr)[0]).to.have.property('title', "Зимние дороги")
         })
     })
+
 
     /*
 Здесь я пытался написать тест, в котором бы исследовалось изменение положения элементов графика при изменении размерности.
