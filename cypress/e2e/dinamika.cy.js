@@ -6,7 +6,9 @@ import {
     auth,
     clickAnElement,
     enterGradient,
-    parseToJSON
+    parseToJSON,
+    waitForElement,
+    waitForElementIsAbsent
 } from "../../page-objects/functions.js"
 
 
@@ -42,20 +44,20 @@ describe('actions', () => {
     it('should check the "graph-table" switcher', () => {
         clickAnElement('Таблица')
         cy.get('table.GradientTable__Table').should('exist').and('be.visible')
-        cy.get('li.GradientVizel__Chart').should('not.exist')
+        waitForElementIsAbsent('li.GradientVizel__Chart')
         clickAnElement('График')
         cy.get('li.GradientVizel__Chart').should('exist').and('be.visible')
-        cy.get('table.GradientTable__Table').should('not.exist')
+        waitForElementIsAbsent('table.GradientTable__Table')
     })
 
 
     it('should check the "data-ratings" switcher', () => {
         cy.get('.SwitchButtons:first-of-type > :last-child').click()
         cy.get('section.RankedChart').should('exist').and('be.visible')
-        cy.get('section.LineChart').should('not.exist')
+        waitForElementIsAbsent('section.LineChart')
         cy.get('.SwitchButtons:first-of-type > :first-child').click()
         cy.get('section.LineChart').should('exist').and('be.visible')
-        cy.get('section.RankedChart').should('not.exist')
+        waitForElementIsAbsent('section.RankedChart')
     })
 
 

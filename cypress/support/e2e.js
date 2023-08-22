@@ -27,7 +27,16 @@ Cypress.on('uncaught:exception', (err, runnable) => {
             // and let the test continue
                 return false
             }
-  })
+})
 
+/*
+Cypress.on('fail', (e, runnable) => {
+    cy.log('error', e)
+    cy.log('=============================================================================================')
+    if (e.message.includes('ul.AppTree__ChildList>li.AppTree__Item:not(.hidden)')) {
+        return false
+    }
+})
+*/
 
   // inspect the caught error

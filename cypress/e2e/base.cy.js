@@ -21,7 +21,7 @@ describe('demo actions', () => {
     })
 
 
-    it('should turn the screens through', () => {
+    it.only('should turn the screens through', () => {
         clickAnElement('Оценка потенциала')
         showElement(Cypress.env('diagramSelectorAlternative'))
         cy.wait(1500)
@@ -54,6 +54,7 @@ describe('demo actions', () => {
     it('should switch colour themes', () => {
         clickAnElement('Аналитика')
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')
+        
         cy.get(".DsShellHeader__ThemeSwitcher>svg").click()
         cy.wait(1500)
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')

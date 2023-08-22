@@ -21,6 +21,10 @@ export function waitForElement(el){
     cy.get(el, {timeout: 10000}).should('exist')
 }
 
+export function waitForElementIsAbsent(el){
+    cy.get(el).should('not.exist')
+}
+
 export function showElement(el){
     cy.get(el, {timeout: 10000}).should('be.visible')
 }
@@ -49,7 +53,6 @@ export function switchLeftPaneElements(headerName, list){
     })
 }
 
-
 export function parseToJSON(xhr){
     // парсинг stream+json в json
     let data = xhr.response.body
@@ -63,3 +66,8 @@ export function parseToJSON(xhr){
     return data
 }
 
+export function checkNormalisation(txt){
+    clickAnElement(txt)
+    //cy.get('.GradientVizel__Potencial_Title').should('contain.text', txt)
+    cy.get('div.GradientVizel__Title').should('contain.text', txt)
+}
