@@ -9,7 +9,9 @@ import {
     parseToJSON,
     checkNormalisation,
     waitForElement,
-    waitForElementIsAbsent
+    waitForElementIsAbsent,
+    zoomIn,
+    zoomInAndOut
 } from "../../page-objects/functions.js"
 
 
@@ -170,12 +172,22 @@ describe('actions', () => {
     })
 
 
-    it.skip('should check enlarging and diminishing', () => {
-        vizelOnly = 'li.GradientVizel__Chart:only-of-type'
+    it('should check enlarging and diminishing', () => {
+        //vizelOnly = 'li.GradientVizel__Chart:only-of-type'
         cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
-        cy.get('GBar__Title__Menu').click()
-        clickAnElement('Увеличить')
-        cy.get('li.GradientVizel__Chart').should('be.')
-        waitForElement(vizelOnly)
+        cy.get('span.GBar__Title__Menu').first().click()
+        zoomInAndOut('ul.GBarMenu>li:first-of-type')
+        zoomInAndOut('div#zoomIn')       
+    })
+
+    it.only('should check metrics comparing interface', () => {
+        let popUp = 'div.OpenModalContainer__Content'
+        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
+        cy.get('span.GBar__Title__Menu').first().click()
+        clickAnElement('Сравнение по метрикам')
+        waitForElement(popUp)
+        cy.wait(2000)
+        cy.get('i.GradientVizel__ModalClose').trigger('click')         //cy.get('path[fill-rule="evenodd"]').first().click
+        waitForElementIsAbsent(popUp)
     })
 })

@@ -13,23 +13,24 @@ export function clickAnElement(text) {
     cy.contains(text).click()
 }
 
-export function enterGradient(){
+export function enterGradient() {
     clickAnElement('Визуализации')
+    clickAnElement('LС Нефть')
 }
 
-export function waitForElement(el){
+export function waitForElement(el) {
     cy.get(el, {timeout: 10000}).should('exist')
 }
 
-export function waitForElementIsAbsent(el){
+export function waitForElementIsAbsent(el) {
     cy.get(el).should('not.exist')
 }
 
-export function showElement(el){
+export function showElement(el) {
     cy.get(el, {timeout: 10000}).should('be.visible')
 }
 
-export function searchProcessInHeader(name){
+export function searchProcessInHeader(name) {
     // Не используется
     Cypress.env('processes').forEach(el => {
         clickAnElement(name)
@@ -37,7 +38,7 @@ export function searchProcessInHeader(name){
     })
 }
 
-export function searchArticleInHeader(name){
+export function searchArticleInHeader(name) {
     // Не используется    
     Cypress.env('articles').forEach(el => {
         clickAnElement(name)
@@ -45,7 +46,7 @@ export function searchArticleInHeader(name){
     })
 }
 
-export function switchLeftPaneElements(headerName, list){
+export function switchLeftPaneElements(headerName, list) {
     //проверка на активность элемента (?)
     list.forEach(el => {
         clickAnElement(el)
@@ -53,7 +54,7 @@ export function switchLeftPaneElements(headerName, list){
     })
 }
 
-export function parseToJSON(xhr){
+export function parseToJSON(xhr) {
     // парсинг stream+json в json
     let data = xhr.response.body
     if (String(xhr.response.headers['content-type']).startsWith('application/stream+json')) {
@@ -66,8 +67,21 @@ export function parseToJSON(xhr){
     return data
 }
 
-export function checkNormalisation(txt){
+export function checkNormalisation(txt) {
     clickAnElement(txt)
     //cy.get('.GradientVizel__Potencial_Title').should('contain.text', txt)
     cy.get('div.GradientVizel__Title').should('contain.text', txt)
 }
+
+
+export function zoomInAndOut(selector) {
+    let vizelOnly = 'li.GradientVizel__Chart:only-of-type'
+    cy.get(selector).click()
+    waitForElement(vizelOnly)
+    cy.wait(500)
+    cy.get('div#zoomIn').should('have.class', 'disabled')
+    cy.wait(500)
+    cy.get('div#zoomOut').click()
+    waitForElementIsAbsent(vizelOnly)
+}
+
