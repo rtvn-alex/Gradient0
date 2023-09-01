@@ -8,7 +8,8 @@ import {
     enterGradient,
     parseToJSON,
     waitForElement,
-    waitForElementIsAbsent
+    waitForElementIsAbsent,
+    shouldContainText
 } from "../../page-objects/functions.js"
 
 
@@ -25,7 +26,7 @@ describe('actions', () => {
 
     it('should check the page and elements', () => {
         cy.get('section.LineChart', {timeout:10000})    //есть только у графика и только в режиме "Значения" 
-        cy.get('li.LineChart__Title').should('contain.text', 'кв')
+        shouldContainText('li.LineChart__Title', 'кв')
         cy.contains('руб./тн').should('exist')
     })
 

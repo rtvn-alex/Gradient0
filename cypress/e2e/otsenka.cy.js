@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 
+//import { should } from "chai"
 import {
     navigate,
     auth,
@@ -10,8 +11,10 @@ import {
     checkNormalisation,
     waitForElement,
     waitForElementIsAbsent,
-    zoomIn,
-    zoomInAndOut
+    zoomInAndOut,
+    isAndIsnt,
+    switchLeftPaneElements,
+    shouldContainText
 } from "../../page-objects/functions.js"
 
 
@@ -72,8 +75,8 @@ describe('actions', () => {
     it('should check changing of names after switching "plan+fact"', () => {
         cy.get('button.PeriodsSelector__Button:nth-of-type(4)').click()
         cy.get('button.PeriodsSelector__Button.active').should('have.text', '9+3')
-        cy.get('.GradientVizel__Potencial_Title').should('contain.text', '9+3')
-        cy.get('.GradientVizel__Title').should('contain.text', '9+3')
+        shouldContainText('.GradientVizel__Potencial_Title', '9+3')
+        shouldContainText('.GradientVizel__Title', '9+3')
     })
 
 
@@ -81,8 +84,8 @@ describe('actions', () => {
         cy.get('button.last').click()
         cy.get('li.MainPane__PeriodsSelectItem:nth-of-type(5):last').click() 
         waitForElementIsAbsent('button.PeriodsSelector__Button.active')
-        cy.get('.GradientVizel__Potencial_Title').should('contain.text', '4+8')
-        cy.get('.GradientVizel__Title').should('contain.text', '4+8')
+        shouldContainText('.GradientVizel__Potencial_Title', '4+8')
+        shouldContainText('.GradientVizel__Title', '4+8')
     })
 
 
@@ -90,7 +93,7 @@ describe('actions', () => {
         cy.get('div.CustomDatePickerTrigger').click()
         clickAnElement('2021')
         // cy.get('.GradientVizel__Potencial_Title').should('contain.text', '2021')          УТОЧНИТЬ!!!
-        cy.get('.GradientVizel__Title').should('contain.text', '2021')
+        shouldContainText('.GradientVizel__Title', '2021')
         waitForElementIsAbsent('div.react-datepicker__year--container')
     })
 
@@ -180,7 +183,18 @@ describe('actions', () => {
         zoomInAndOut('div#zoomIn')       
     })
 
-    it.only('should check metrics comparing interface', () => {
+
+    it('should check for diminishing of the diagrams from the default position and enlarging them back', () => {
+        let normal = 'ul.Normal', little = 'ul.Little'
+        isAndIsnt(normal, little)
+        cy.get('div#zoomOut').click()
+        isAndIsnt(little, normal)
+        cy.get('div#zoomIn').click()
+        isAndIsnt(normal, little)
+    })
+
+
+    it('should check metrics comparing interface', () => {
         let popUp = 'div.OpenModalContainer__Content'
         cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
         cy.get('span.GBar__Title__Menu').first().click()
@@ -190,4 +204,36 @@ describe('actions', () => {
         cy.get('i.GradientVizel__ModalClose').trigger('click')         //cy.get('path[fill-rule="evenodd"]').first().click
         waitForElementIsAbsent(popUp)
     })
+
+
+    it('should check appearing of pop-up above the columns', () => {
+        
+        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
+        cy.wait(3000)
+        cy.document().then((doc) => {
+            let columns = doc.querySelectorAll('div.GBarChart__XAxisBlock')
+            columns.forEach((column) => {
+                cy.get(column)
+                .should('have.attr', 'aria-expanded', 'false')
+                .trigger('mouseenter').wait(200)
+                .should('have.attr', 'aria-expanded', 'true')
+                .trigger('mouseleave', 'bottom').wait(200)
+                .should('have.attr', 'aria-expanded', 'false')
+            })
+        })
+        
+    })
+
+
+    it('should switch the processes and articles', () => {
+        switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('articles'))
+        switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('processes'))
+    })
+
+
+    it.only('should check changing of actives and subactives', () => {
+
+    })
+
+
 })

@@ -9,7 +9,8 @@ import {
     waitForElement,
     searchProcessInHeader,
     searchArticleInHeader,
-    switchLeftPaneElements
+    switchLeftPaneElements,
+    shouldContainText
 } from "../../page-objects/functions.js"
 
 
@@ -69,10 +70,10 @@ describe('demo actions', () => {
         cy.wait(1500)
         clickAnElement('Ямал')
         clickAnElement('Хантос')
-        cy.get('.GBarChart__Main .GBarChart__XAxisBlock.first').should('contain.text', 'Хантос')
+        shouldContainText('.GBarChart__Main .GBarChart__XAxisBlock.first', 'Хантос')
         clickAnElement('Хантос')
         clickAnElement('Восток')
-        cy.get('.GBarChart__Main .GBarChart__XAxisBlock.first').should('contain.text', 'Восток')
+        shouldContainText('.GBarChart__Main .GBarChart__XAxisBlock.first', 'Восток')
     })
 
 

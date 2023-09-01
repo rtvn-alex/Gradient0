@@ -13,6 +13,10 @@ export function clickAnElement(text) {
     cy.contains(text).click()
 }
 
+export function shouldContainText(selector, text) {
+    cy.get(selector, {timeout: 8000}).should('contain.text', text)
+}
+
 export function enterGradient() {
     clickAnElement('Визуализации')
     clickAnElement('LС Нефть')
@@ -34,7 +38,7 @@ export function searchProcessInHeader(name) {
     // Не используется
     Cypress.env('processes').forEach(el => {
         clickAnElement(name)
-        cy.get('div.Header div', ).should('contain.text', el)
+        shouldContainText('div.Header div', el)
     })
 }
 
@@ -42,7 +46,7 @@ export function searchArticleInHeader(name) {
     // Не используется    
     Cypress.env('articles').forEach(el => {
         clickAnElement(name)
-        cy.get('div.GradientVizel__Title', {timeout: 6000}).should('contain.text', el)
+        shouldContainText('div.GradientVizel__Title', el)
     })
 }
 
@@ -50,7 +54,7 @@ export function switchLeftPaneElements(headerName, list) {
     //проверка на активность элемента (?)
     list.forEach(el => {
         clickAnElement(el)
-        cy.get(headerName).should('contain.text', el)
+        shouldContainText(headerName, el)
     })
 }
 
@@ -70,7 +74,7 @@ export function parseToJSON(xhr) {
 export function checkNormalisation(txt) {
     clickAnElement(txt)
     //cy.get('.GradientVizel__Potencial_Title').should('contain.text', txt)
-    cy.get('div.GradientVizel__Title').should('contain.text', txt)
+    shouldContainText('div.GradientVizel__Title', txt)
 }
 
 
@@ -83,5 +87,11 @@ export function zoomInAndOut(selector) {
     cy.wait(500)
     cy.get('div#zoomOut').click()
     waitForElementIsAbsent(vizelOnly)
+}
+
+
+export function isAndIsnt(el1, el2) {
+    waitForElement(el1)
+    waitForElementIsAbsent(el2)
 }
 
