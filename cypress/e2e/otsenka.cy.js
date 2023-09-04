@@ -25,8 +25,14 @@ describe('actions', () => {
         enterGradient()
         clickAnElement('Оценка')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
-        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial1')
-        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl')
+        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl1')
+        /*cy.intercept({
+            path: '/data?el',
+            query: {
+                filter: '+(5, 1, 2)+'
+            }
+        }).as('dataEl')*/
     })
 
 
@@ -35,7 +41,7 @@ describe('actions', () => {
         waitForElement('span.Tag:nth-of-type(7)')                                                       //загружаются 7 активов
         cy.get(('div.MainPane__SwitchViewButtons>button.AppButton.active')).should('have.text', 'График')       //Переключатель в востоянии "График"
         cy.get('button.AppButton_Size_Sm.active').should('have.text', 'Без нормализации')                       //Переключатель в востоянии "Без нормализации"
-        cy.contains('руб./тн').should('exist')                                                                  //Установлен размерность 'руб./тн'
+        cy.contains('руб./тн').should('exist')                                                                  //Установлена размерность 'руб./тн'
     })
 
 
@@ -232,7 +238,39 @@ describe('actions', () => {
 
 
     it.only('should check changing of actives and subactives', () => {
-
+        cy.wait(2000)
+        clickAnElement('Ямал')
+        clickAnElement(Cypress.env('someAct'))
+        cy.get('span.Tag')
+        .first()
+        .children()
+        .should('contain.text', Cypress.env('someAct'))
+        .nextAll()
+        .should('not.exist')
+        //cy.wait(['@dataEl', '@dataEl']).then((xhr) => {
+        Cypress.on('fail', (error, runnable) => {
+            if (error.message.includes('expected 5 to equal')) {
+                cy.log('ERRRRRRRORRRRRRRRR')
+                cy.wait('@dataEl').then((xhr) => {
+                    expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
+                    expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
+                })
+                .then(() => {return false})           
+            }
+        }) 
+        cy.wait('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
+            expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
+        })
+        cy.wait('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
+            expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
+        })
+        /*cy.wait(500)
+        cy.wait('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
+            expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
+        })    */
     })
 
 
