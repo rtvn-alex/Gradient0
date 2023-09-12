@@ -95,3 +95,13 @@ export function isAndIsnt(el1, el2) {
     waitForElementIsAbsent(el2)
 }
 
+
+export function textInSeveralElements(text, elements) {
+    cy.document().then((doc) => {                                             // У всех диаграмм внизу выводится первым по порядку
+        let theseAll = doc.querySelectorAll(elements)
+        theseAll.forEach((thisOne) => {
+            shouldContainText(thisOne, text)
+        })
+    })
+}
+

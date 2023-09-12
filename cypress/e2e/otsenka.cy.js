@@ -14,7 +14,8 @@ import {
     zoomInAndOut,
     isAndIsnt,
     switchLeftPaneElements,
-    shouldContainText
+    shouldContainText,
+    textInSeveralElements
 } from "../../page-objects/functions.js"
 
 
@@ -24,7 +25,7 @@ describe('actions', () => {
         auth()
         enterGradient()
         clickAnElement('Оценка')
-        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
+       cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial') 
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl')
         //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl1')
         /*cy.intercept({
@@ -238,39 +239,55 @@ describe('actions', () => {
 
 
     it.only('should check changing of actives and subactives', () => {
-        cy.wait(2000)
+        const act = Cypress.env('someAct')
+        const subact = 'Южное'
+        cy.wait(3000)
+        /*cy.wait('@elPotencial').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(5)                // Проверка запроса и ответа для "Ямал"
+            expect(parseToJSON(xhr)[0]).to.have.property('do_name', 'Ямал')*/
+        //})
+        //cy.wait('@elPotencial')
         clickAnElement('Ямал')
-        clickAnElement(Cypress.env('someAct'))
+        clickAnElement(act)
+       //cy.wait('@elPotencial')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
+        cy.wait('@elPotencial2').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)                // Проверка запроса и ответа для act 
+            expect(parseToJSON(xhr)[0]).to.have.property('do_name', act)
+        })
+
+        cy.get('span.Tag')                                                         // Первый в списке активов и без крестика
+        .first()
+        .children()
+        .should('contain.text', act)
+        .nextAll()
+        .should('not.exist')
+
+        shouldContainText('div.GradientVizel__Potencial_Title', act)
+        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000}) 
+        cy.wait(100)             // Выводится в заголовке
+        textInSeveralElements(act, 'div.first>.GBarChart__XAxisTitle')            // Первый по порядку во всех нижних диаграммах
+
+        /*clickAnElement('Ямал')
+        clickAnElement(act)
+        cy.wait('@dataEl')*/
+        clickAnElement('Не выбрано')
+        clickAnElement(subact)
+
         cy.get('span.Tag')
         .first()
         .children()
-        .should('contain.text', Cypress.env('someAct'))
+        .should('contain.text', subact)
         .nextAll()
         .should('not.exist')
-        //cy.wait(['@dataEl', '@dataEl']).then((xhr) => {
-        Cypress.on('fail', (error, runnable) => {
-            if (error.message.includes('expected 5 to equal')) {
-                cy.log('ERRRRRRRORRRRRRRRR')
-                cy.wait('@dataEl').then((xhr) => {
-                    expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
-                    expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
-                })
-                .then(() => {return false})           
-            }
-        }) 
-        cy.wait('@dataEl').then((xhr) => {
-            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
-            expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
-        })
-        cy.wait('@dataEl').then((xhr) => {
-            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
-            expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
-        })
-        /*cy.wait(500)
-        cy.wait('@dataEl').then((xhr) => {
-            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
-            expect(parseToJSON(xhr)[0]).to.have.property('etalontitle', Cypress.env('someAct'))
-        })    */
+
+        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})              // Первый по порядку во всех нижних диаграммах
+        cy.wait(100)
+        textInSeveralElements(subact, 'div.first>.GBarChart__XAxisTitle')
+
+        //textInSeveralElements(subact, 'div.first>.GBarChart__XAxisTitle')
+
+        
     })
 
 
