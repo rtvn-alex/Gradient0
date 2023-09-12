@@ -15,7 +15,12 @@ import {
     isAndIsnt,
     switchLeftPaneElements,
     shouldContainText,
-    textInSeveralElements
+    textInSeveralElements,
+    shouldBeInBreadcrumbs,
+    otsenka_drilldown,
+    scrollDown,
+    scrollUp,
+    waitForRequest
 } from "../../page-objects/functions.js"
 
 
@@ -25,7 +30,7 @@ describe('actions', () => {
         auth()
         enterGradient()
         clickAnElement('Оценка')
-       cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial') 
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial') 
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl')
         //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl1')
         /*cy.intercept({
@@ -106,9 +111,9 @@ describe('actions', () => {
 
 
     it('should delete an active correctly', () => {
-        cy.get('div.DsShellMain').scrollTo('bottom')
+        scrollDown()
         cy.contains('div.GBarChart__XAxisTitle', Cypress.env('someAct')).should('exist')
-        cy.get('div.DsShellMain').scrollTo('top')
+        scrollUp()
         cy.contains('span', Cypress.env('someAct')).siblings('i').click()
         cy.contains(Cypress.env('someAct')).should('not.be.visible')
     })
@@ -183,7 +188,6 @@ describe('actions', () => {
 
 
     it('should check enlarging and diminishing', () => {
-        //vizelOnly = 'li.GradientVizel__Chart:only-of-type'
         cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
         cy.get('span.GBar__Title__Menu').first().click()
         zoomInAndOut('ul.GBarMenu>li:first-of-type')
@@ -203,7 +207,7 @@ describe('actions', () => {
 
     it('should check metrics comparing interface', () => {
         let popUp = 'div.OpenModalContainer__Content'
-        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
+        scrollDown()
         cy.get('span.GBar__Title__Menu').first().click()
         clickAnElement('Сравнение по метрикам')
         waitForElement(popUp)
@@ -215,7 +219,7 @@ describe('actions', () => {
 
     it('should check appearing of pop-up above the columns', () => {
         
-        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
+        scrollDown()
         cy.wait(3000)
         cy.document().then((doc) => {
             let columns = doc.querySelectorAll('div.GBarChart__XAxisBlock')
@@ -238,18 +242,12 @@ describe('actions', () => {
     })
 
 
-    it.only('should check changing of actives and subactives', () => {
+    it('should check changing of actives and subactives', () => {
         const act = Cypress.env('someAct')
         const subact = 'Южное'
         cy.wait(3000)
-        /*cy.wait('@elPotencial').then((xhr) => {
-            expect(xhr.request.body.filters.do_code[1]).to.be.eq(5)                // Проверка запроса и ответа для "Ямал"
-            expect(parseToJSON(xhr)[0]).to.have.property('do_name', 'Ямал')*/
-        //})
-        //cy.wait('@elPotencial')
         clickAnElement('Ямал')
         clickAnElement(act)
-       //cy.wait('@elPotencial')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
         cy.wait('@elPotencial2').then((xhr) => {
             expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)                // Проверка запроса и ответа для act 
@@ -263,17 +261,13 @@ describe('actions', () => {
         .nextAll()
         .should('not.exist')
 
-        shouldContainText('div.GradientVizel__Potencial_Title', act)
-        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000}) 
-        cy.wait(100)             // Выводится в заголовке
+        shouldContainText('div.GradientVizel__Potencial_Title', act)              // Выводится в заголовке
+        scrollDown()
+        cy.wait(100)
         textInSeveralElements(act, 'div.first>.GBarChart__XAxisTitle')            // Первый по порядку во всех нижних диаграммах
 
-        /*clickAnElement('Ямал')
-        clickAnElement(act)
-        cy.wait('@dataEl')*/
         clickAnElement('Не выбрано')
         clickAnElement(subact)
-
         cy.get('span.Tag')
         .first()
         .children()
@@ -281,13 +275,98 @@ describe('actions', () => {
         .nextAll()
         .should('not.exist')
 
-        cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})              // Первый по порядку во всех нижних диаграммах
+        scrollDown()              // Первый по порядку во всех нижних диаграммах
         cy.wait(100)
         textInSeveralElements(subact, 'div.first>.GBarChart__XAxisTitle')
+    })
 
-        //textInSeveralElements(subact, 'div.first>.GBarChart__XAxisTitle')
 
+    it.only('should check the navigation by both ways', () => {
+        const crumbs = [
+            'Транспорт',
+            'Транспортные услуги',
+            'Грузовой транспорт',
+            'Самосвал (включая автопоезд)',
+            'Грузоподъемность 20.1 - 40 т'
+        ]
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl2')
+        /*const header = 'div.GradientVizel__Title'
+
+        clickAnElement(crumbs[1])
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
+        cy.wait('@elPotencial2').then((xhr) => {
+            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)                // Проверка запроса и ответа 
+        })
+        shouldContainText(header, crumbs[1])
+        shouldBeInBreadcrumbs(crumbs[1])
+
+        cy.contains(crumbs[2]).trigger('mouseenter')
+        clickAnElement('Подробнее')
+        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
+        cy.wait('@elPotencial2').then((xhr) => {
+            expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2)                // Проверка запроса и ответа
+        })
+        shouldContainText(header, crumbs[2])
+        shouldBeInBreadcrumbs(crumbs[2])
+        */
+/*
+        scrollDown()
+        cy.wait(2000)
+        cy.get('span.GBar__Title__Title').first().click()
+        cy.wait(2000)
+        scrollUp()
+        shouldBeInBreadcrumbs(crumbs[1])
+        */
+
+        otsenka_drilldown(crumbs[1])
+        waitForRequest('@dataEl2', {body: {filters: {cost_sub_categories_id: ["=", 112]}}}, 10)
+        cy.get('@dataEl2')
+        .its('request.body.filters.cost_sub_categories_id[1]').should('to.be.eq', 112)
+
+        otsenka_drilldown(crumbs[2])
+        cy.wait('@dataEl2').then((xhr) => {
+            expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2)                // Проверка запроса и ответа 
+        })
+
+        otsenka_drilldown(crumbs[3])
+        cy.wait('@dataEl2').then((xhr) => {
+            expect(xhr.request.body.filters.class_code3[1]).to.be.eq(20110)                // Проверка запроса и ответа 
+        })
+        /*
+        cy.wait('@dataEl2')
+        cy.wait('@dataEl2')
+        cy.wait('@dataEl2')
+        cy.wait('@dataEl2').then((xhr) => {
+            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)                // Проверка запроса и ответа 
+        })
+        */
+/*
+ХЗ, МОЖЕТ, НЕ НАДО ПОСЛЕ ПЕРВОГО РАЗА
+        otsenka_drilldown(crumbs[2])
+        cy.wait(3000)
+        waitForRequest('@dataEl2', {body: {filters: {class_code1: ["=", 2]}}}, 10)
+        cy.get('@dataEl2')
+        .its('request.body.filters.class_code1[1]').should('to.be.eq', 2)
+*/
+        /*
+        otsenka_drilldown(crumbs[3])
+        cy.wait('@elPotencial2').then((xhr) => {
+            expect(xhr.request.body.filters.class_code3[1]).to.be.eq(20102)                // Проверка запроса и ответа 
+        })
+*/
+        otsenka_drilldown(crumbs[4])
+        waitForElementIsAbsent('ul.GradientVizel__Charts')
+
+        cy.get('li.GBreadcrumbs__Item').first().click()
+        clickAnElement('График')
+        scrollDown()
+        waitForElement('ul.GradientVizel__Charts')
         
+        for (let i = 1; i <= 4; i++) {
+            cy.contains(crumbs[i]).trigger('mouseenter')
+            clickAnElement('Подробнее')
+        }
+        waitForElementIsAbsent('ul.GradientVizel__Charts')
     })
 
 

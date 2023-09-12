@@ -105,3 +105,60 @@ export function textInSeveralElements(text, elements) {
     })
 }
 
+
+export function scrollDown() {
+    cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
+}
+
+
+export function scrollUp() {
+    cy.get('div.DsShellMain').scrollTo('top', {timeout: 8000})
+}
+
+
+export function shouldBeInBreadcrumbs(text) {
+    cy.get('li.GBreadcrumbs__Item')
+    .last()
+    .children('span')
+    .should('contain.text', text)
+}
+
+
+export function otsenka_drilldown(crumb) {
+    scrollDown()
+    cy.wait(2000)
+    cy.get(`span[title="${crumb}"]`).click()
+    cy.wait(2000)
+    shouldContainText('div.GradientVizel__Title', crumb)
+    scrollUp()
+    shouldBeInBreadcrumbs(crumb)
+    
+}
+
+
+export function waitForResponse(alias, partialResponse, maxRequests, level = 0) {
+    if (level === maxRequests) {
+        throw `${maxRequests} requests exceeded`         // fail the test
+    }
+    cy.wait(alias).then(xhr => {
+        cy.log(`Request number ${level+1}`)
+        const isMatch = Cypress._.isMatch(xhr.response, partialResponse)
+        if (!isMatch) {
+            waitForResponse(alias, partialResponse, maxRequests, level+1)
+        }
+    })
+}
+
+
+export function waitForRequest(alias, partialRequest, maxRequests, level = 0) {
+    if (level === maxRequests) {
+        throw `${maxRequests} requests exceeded`         // fail the test
+    }
+    cy.wait(alias).then(xhr => {
+        cy.log(`Request number ${level+1}`)
+        const isMatch = Cypress._.isMatch(xhr.request, partialRequest)
+        if (!isMatch) {
+            waitForRequest(alias, partialRequest, maxRequests, level+1)
+        }
+    })
+}
