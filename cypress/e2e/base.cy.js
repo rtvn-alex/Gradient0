@@ -31,7 +31,7 @@ describe('demo actions', () => {
         cy.wait(1500)
         clickAnElement('Мониторинг')
         showElement(Cypress.env('diagramSelectorAlternative'))
-        for (let i of ['2', '3', '4']){
+        for (let i = 2; i <= 4; i++){
             waitForElement(Cypress.env('diagramSelectorAlternative') + `:nth-of-type(${i}n)`)
         }
         clickAnElement('...')    // button.AppButton.SubMenuButton
@@ -48,7 +48,6 @@ describe('demo actions', () => {
         clickAnElement('...')
         clickAnElement('анализ')
         showElement(Cypress.env('diagramSelectorAlternative'))
-        cy.wait(1500)
     })
 
 

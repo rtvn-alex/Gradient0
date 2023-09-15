@@ -147,7 +147,7 @@ describe('actions', () => {
             cy.get('i span').check()
         }*/
         
-        for (let i of Cypress.env('digits').slice(0, 3)){
+        for (let i = 1; i <= 3; i++) {
             cy.get('ul.AppTree__ChildList>:nth-child(' + `${i}` +') span').click()
         }
         /*
@@ -281,7 +281,7 @@ describe('actions', () => {
     })
 
 
-    it.only('should check the navigation by both ways', () => {
+    it.only('should check the navigation by all ways', () => {
         const crumbs = [
             'Транспорт',
             'Транспортные услуги',
@@ -290,33 +290,6 @@ describe('actions', () => {
             'Грузоподъемность 20.1 - 40 т'
         ]
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl2')
-        /*const header = 'div.GradientVizel__Title'
-
-        clickAnElement(crumbs[1])
-        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
-        cy.wait('@elPotencial2').then((xhr) => {
-            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)                // Проверка запроса и ответа 
-        })
-        shouldContainText(header, crumbs[1])
-        shouldBeInBreadcrumbs(crumbs[1])
-
-        cy.contains(crumbs[2]).trigger('mouseenter')
-        clickAnElement('Подробнее')
-        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
-        cy.wait('@elPotencial2').then((xhr) => {
-            expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2)                // Проверка запроса и ответа
-        })
-        shouldContainText(header, crumbs[2])
-        shouldBeInBreadcrumbs(crumbs[2])
-        */
-/*
-        scrollDown()
-        cy.wait(2000)
-        cy.get('span.GBar__Title__Title').first().click()
-        cy.wait(2000)
-        scrollUp()
-        shouldBeInBreadcrumbs(crumbs[1])
-        */
 
         otsenka_drilldown(crumbs[1])
         waitForRequest('@dataEl2', {body: {filters: {cost_sub_categories_id: ["=", 112]}}}, 10)
@@ -332,40 +305,25 @@ describe('actions', () => {
         cy.wait('@dataEl2').then((xhr) => {
             expect(xhr.request.body.filters.class_code3[1]).to.be.eq(20110)                // Проверка запроса и ответа 
         })
-        /*
-        cy.wait('@dataEl2')
-        cy.wait('@dataEl2')
-        cy.wait('@dataEl2')
-        cy.wait('@dataEl2').then((xhr) => {
-            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)                // Проверка запроса и ответа 
-        })
-        */
-/*
-ХЗ, МОЖЕТ, НЕ НАДО ПОСЛЕ ПЕРВОГО РАЗА
-        otsenka_drilldown(crumbs[2])
-        cy.wait(3000)
-        waitForRequest('@dataEl2', {body: {filters: {class_code1: ["=", 2]}}}, 10)
-        cy.get('@dataEl2')
-        .its('request.body.filters.class_code1[1]').should('to.be.eq', 2)
-*/
-        /*
-        otsenka_drilldown(crumbs[3])
-        cy.wait('@elPotencial2').then((xhr) => {
-            expect(xhr.request.body.filters.class_code3[1]).to.be.eq(20102)                // Проверка запроса и ответа 
-        })
-*/
+        
         otsenka_drilldown(crumbs[4])
         waitForElementIsAbsent('ul.GradientVizel__Charts')
 
-        cy.get('li.GBreadcrumbs__Item').first().click()
+        let n = 4                                                                        // Возврат по breadcrumbs
+        cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[4])
+        for (let i = n; i > 0; i--) {
+            cy.get('li.GBreadcrumbs__Item').eq(i-1).click()
+            //cy.wait(2000)
+            cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[i - 1])
+        }
+
         clickAnElement('График')
         scrollDown()
-        waitForElement('ul.GradientVizel__Charts')
-        
-        for (let i = 1; i <= 6; i++) {
-            //cy.contains(crumbs[i]).trigger('mouseenter')
+        waitForElement('ul.GradientVizel__Charts')       
+        for (let i = 1; i <= 6; i++) {                                                   // Дриллдаун по кнопке "Подробнее"
             clickAnElement('Подробнее')
         }
+
         waitForElementIsAbsent('ul.GradientVizel__Charts')
     })
 
