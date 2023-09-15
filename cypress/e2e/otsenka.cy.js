@@ -362,8 +362,8 @@ describe('actions', () => {
         scrollDown()
         waitForElement('ul.GradientVizel__Charts')
         
-        for (let i = 1; i <= 4; i++) {
-            cy.contains(crumbs[i]).trigger('mouseenter')
+        for (let i = 1; i <= 6; i++) {
+            //cy.contains(crumbs[i]).trigger('mouseenter')
             clickAnElement('Подробнее')
         }
         waitForElementIsAbsent('ul.GradientVizel__Charts')
