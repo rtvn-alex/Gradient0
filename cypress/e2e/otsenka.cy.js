@@ -16,7 +16,7 @@ import {
     switchLeftPaneElements,
     shouldContainText,
     textInSeveralElements,
-    shouldBeInBreadcrumbs,
+    //shouldBeInBreadcrumbs,
     otsenka_drilldown,
     scrollDown,
     scrollUp,
@@ -24,21 +24,14 @@ import {
 } from "../../page-objects/functions.js"
 
 
-describe('actions', () => {
+describe('basic tests', () => {
     beforeEach(() => {
         navigate()
         auth()
         enterGradient()
         clickAnElement('Оценка')
-        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial') 
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2') 
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl')
-        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl1')
-        /*cy.intercept({
-            path: '/data?el',
-            query: {
-                filter: '+(5, 1, 2)+'
-            }
-        }).as('dataEl')*/
     })
 
 
@@ -51,36 +44,16 @@ describe('actions', () => {
     })
 
 
-    it.skip('should check "plan+fact" switchers', () => {
-        // НЕ РАБОТАЕТ - либо починить, либо удалить
-        //cy.wait('@elPotencial')
-        
-        cy.get('button.PeriodsSelector__Button:nth-of-type(4)').click()
-        .then(cy.wait('@elPotencial')
-        .then((xhr) => {
+    it('should check "plan+fact" switchers', () => {
+        cy.get('button.PeriodsSelector__Button:nth-of-type(4)', {timeout:10000}).click()
+        shouldContainText('div.GradientVizel__Potencial_Title', '9+3')
+        shouldContainText('div.GradientVizel__Title', '9+3')
+
+        //waitForRequest('@elPotencial2', {body: {filters: {mnt_period: ["=", "9+3"]}}}, 5)         СКОРЕЕ ВСЕГО, НЕ НУЖНО, НО ПОКА НЕ УДАЛЯТЬ
+        cy.get('@elPotencial2').then((xhr) => {
             expect(xhr.request.body.filters.mnt_period[1]).to.be.eq("9+3")
             expect(parseToJSON(xhr)[0]).to.have.property('mnt_period', "9+3")
-        }))
-    })
-
-
-    it.skip('should correctly check "plan+fact" switchers', async () => {
-        // НЕ РАБОТАЕТ - либо починить, либо удалить
-        // ASYNC и AWAIT мб тоже лишние
-
-        await cy.wait('@elPotencial', {timeout:10000})
-        await cy.wait('@elPotencial', {timeout:10000})
-        await cy.wait(5000)
-        //debugger
-        await cy.get('div.GradientVizel__Potencial_Chart_GBar_Value', {timeout:10000}).should('be.visible')
-        await cy.get('button.PeriodsSelector__Button:nth-of-type(4)').click()
-        await cy.wait(5000)
-        //debugger
-        await cy.wait('@elPotencial2')
-        .then((xhr) => {
-            expect(xhr.request.body.filters.mnt_period[1]).to.be.eq("9+3")
-            expect(parseToJSON(xhr)[0]).to.have.property('mnt_period', "9+3")
-        })
+        }) 
     })
 
 
@@ -135,23 +108,13 @@ describe('actions', () => {
     })
 
 
-    it.skip('should check adding of actives to the list', () => {
-        
-        // Не работает, карточка в Wekan https://wekan.spb.luxms.com/b/JwBS9R9iSvJcGEzeK/gradient/9frqNNfLZJTebWyj9
-
+    it('should check adding of actives to the list', () => {
         clickAnElement('Активы')
         cy.contains('label.AppCheckbox', Cypress.env('someAct')).siblings('i').children('svg').click()
-        //cy.contains('Зимнее').children('span').click()
-       // cy.log(cy.get('ul.AppTree__ChildList:nth-child(-n + 3)').map('innerText'))
-        /*for (let i of cy.get('ul.AppTree__ChildList:nth-of-child(-n + 3)').map('innerText')){
-            cy.get('i span').check()
-        }*/
-        
         for (let i = 1; i <= 3; i++) {
             cy.get('ul.AppTree__ChildList>:nth-child(' + `${i}` +') span').click()
         }
-        /*
-        cy.get('ul.AppTree__ChildList>:nth-child(1) span').click() */
+
         cy.get('ul.AppTree__ChildList>:nth-child(4) span').should('not.be.enabled')
     })
 
@@ -162,8 +125,8 @@ describe('actions', () => {
             "Южно-",
             "Вское",
             "восточ",
-            // " + "                эти кейсы пока падают, но вообще-то не должны - 
-            // " (ВУ"               нужно включить, когда (и если) починят; ссылка на Wekan https://clck.ru/35PTNu
+            " + ",                 
+            " (ВУ"               
         ]
         cy.wait(5000)
         clickAnElement('Активы')
@@ -212,7 +175,7 @@ describe('actions', () => {
         clickAnElement('Сравнение по метрикам')
         waitForElement(popUp)
         cy.wait(2000)
-        cy.get('i.GradientVizel__ModalClose').trigger('click')         //cy.get('path[fill-rule="evenodd"]').first().click
+        cy.get('i.GradientVizel__ModalClose').trigger('click')         
         waitForElementIsAbsent(popUp)
     })
 
@@ -279,16 +242,20 @@ describe('actions', () => {
         cy.wait(100)
         textInSeveralElements(subact, 'div.first>.GBarChart__XAxisTitle')
     })
+})
 
 
-    it.only('should check the navigation by all ways', () => {
-        const crumbs = [
-            'Транспорт',
-            'Транспортные услуги',
-            'Грузовой транспорт',
-            'Самосвал (включая автопоезд)',
-            'Грузоподъемность 20.1 - 40 т'
-        ]
+describe('navigation tests', () => {
+    beforeEach(() => {
+        navigate()
+        auth()
+        enterGradient()
+        clickAnElement('Оценка')
+    })
+
+
+    it('should check drilling down and up', () => {
+        const crumbs = Cypress.env('otsenkaCrumbs')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl2')
 
         otsenka_drilldown(crumbs[1])
@@ -298,34 +265,34 @@ describe('actions', () => {
 
         otsenka_drilldown(crumbs[2])
         cy.wait('@dataEl2').then((xhr) => {
-            expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2)                // Проверка запроса и ответа 
+            expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2)                // Проверка запроса 
         })
 
         otsenka_drilldown(crumbs[3])
         cy.wait('@dataEl2').then((xhr) => {
-            expect(xhr.request.body.filters.class_code3[1]).to.be.eq(20110)                // Проверка запроса и ответа 
+            expect(xhr.request.body.filters.class_code3[1]).to.be.eq(20110)                // Проверка запроса 
         })
         
         otsenka_drilldown(crumbs[4])
         waitForElementIsAbsent('ul.GradientVizel__Charts')
 
+        scrollUp()
         let n = 4                                                                        // Возврат по breadcrumbs
         cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[4])
         for (let i = n; i > 0; i--) {
             cy.get('li.GBreadcrumbs__Item').eq(i-1).click()
-            //cy.wait(2000)
             cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[i - 1])
         }
-
-        clickAnElement('График')
-        scrollDown()
-        waitForElement('ul.GradientVizel__Charts')       
-        for (let i = 1; i <= 6; i++) {                                                   // Дриллдаун по кнопке "Подробнее"
-            clickAnElement('Подробнее')
-        }
-
-        waitForElementIsAbsent('ul.GradientVizel__Charts')
     })
 
 
-})
+    it('should check the drilldown by button', () => {
+        scrollDown()
+        waitForElement('ul.GradientVizel__Charts')       
+        for (let i = 1; i <= 4; i++) {                                                   // Дриллдаун по кнопке "Подробнее"
+            clickAnElement('Подробнее')
+            cy.wait(3000)
+        }
+        waitForElementIsAbsent('ul.GradientVizel__Charts')
+    })
+}) 
