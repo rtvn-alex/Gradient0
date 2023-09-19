@@ -150,7 +150,7 @@ describe('basic tests', () => {
     })
 
 
-    it('should check enlarging and diminishing', () => {
+    it.only('should check enlarging and diminishing', () => {
         cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
         cy.get('span.GBar__Title__Menu').first().click()
         zoomInAndOut('ul.GBarMenu>li:first-of-type')
@@ -297,5 +297,22 @@ describe('navigation tests', () => {
             cy.wait(3000)
         }
         waitForElementIsAbsent('ul.GradientVizel__Charts')
+    })
+
+
+    it('should check metrics compairing', () => {
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl')
+        scrollDown()
+        cy.get('span.GBar__Title__Menu').first().click()
+        clickAnElement('Сравнение по метрикам')
+        waitForElement('div.GradientVizel__Modal')
+        shouldContainText('div.OpenModalContainer__Content div.GradientVizel__Title', 'Транспортные услуги')
+        
+        cy.get('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)                // Проверка запроса 
+        })
+
+        cy.get('i.GradientVizel__ModalClose').click()
+        waitForElementIsAbsent('div.GradientVizel__Modal')
     })
 }) 
