@@ -76,8 +76,8 @@ describe('basic tests', () => {
 
     it('should change the year', () => {
         cy.get('div.CustomDatePickerTrigger').click()
-        clickAnElement('2021')
-        // cy.get('.GradientVizel__Potencial_Title').should('contain.text', '2021')          УТОЧНИТЬ!!!
+        cy.get('div.react-datepicker__year-text').eq(4).click()
+        cy.get('.GradientVizel__Potencial_Title').should('contain.text', '2021')          
         shouldContainText('.GradientVizel__Title', '2021')
         waitForElementIsAbsent('div.react-datepicker__year--container')
     })
@@ -212,8 +212,11 @@ describe('basic tests', () => {
         clickAnElement('Ямал')
         clickAnElement(act)
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
-        cy.wait('@elPotencial2').then((xhr) => {
-            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)                // Проверка запроса и ответа для act 
+     
+        waitForRequest('@elPotencial2', {body: {filters: {do_code: ["=", 4]}}}, 10)                // Проверка запроса и ответа для act
+        cy.get('@elPotencial2')
+        .its('request.body.filters.do_code[1]').should('to.be.eq', 4)
+        cy.get('@elPotencial2').then((xhr) => {
             expect(parseToJSON(xhr)[0]).to.have.property('do_name', act)
         })
 
@@ -238,7 +241,7 @@ describe('basic tests', () => {
         .nextAll()
         .should('not.exist')
 
-        scrollDown()              // Первый по порядку во всех нижних диаграммах
+        scrollDown()                                                              // Первый по порядку во всех нижних диаграммах
         cy.wait(100)
         textInSeveralElements(subact, 'div.first>.GBarChart__XAxisTitle')
     })
