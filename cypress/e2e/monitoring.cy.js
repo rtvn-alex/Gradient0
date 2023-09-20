@@ -7,21 +7,29 @@ import {
     clickAnElement,
     enterGradient,
     waitForElement,
-    shouldContainText
+    shouldContainText,
+    scrollDown,
+    scrollUp
 } from "../../page-objects/functions.js"
 
 
 describe('basic tests', () => {
     beforeEach(() => {
         navigate()
+        cy.wait(3000)
         auth()
+        cy.wait(3000)
         enterGradient()
+        cy.wait(3000)
         clickAnElement('Мониторинг')
+        cy.wait(5000)
     })
 
 
-    it.only('should check the page and elements', () => {
-        waitForElement('article.GradientVizel:nth-of-type(3)')                                                       //загружается 3 график
+    it('should check the page and elements', () => {
+        cy.wait(5000)
+        waitForElement('article.GradientVizel:nth-of-type(3)')                                                    //загружается 3 график
+        //waitForElement('.DsShell__Body > :nth-child(4)')
         cy.get(('div.MainPane__SwitchViewButtons>button.AppButton.active span')).should('have.text', 'График')       //Переключатель в состоянии "График"                       
         cy.contains('руб./тн').should('exist')                                                                       //Установлена размерность 'руб./тн'
         cy.get('li.PaneList__Item.active>div').eq(0).should('have.text', 'Все процессы')                             //Установлено "Все процессы"
@@ -31,11 +39,19 @@ describe('basic tests', () => {
     })
 
 
-    it('should check header filters', () => {
-/// skip it
+    it.only('should check deleting of header filters', () => {
+        let fact19 = Cypress.env('somePeriod')
+        let co26 = Cypress.env('someCO')
+        scrollDown()
+        cy.contains('div.GBarChart__XAxisTitle', fact19).should('be.visible')
+        cy.contains('span.GBarChart__EtalonTitle', co26).should('be.visible')
+        scrollUp()
+        cy.contains('div.HeaderFilter', fact19).children('button').click()
+        cy.contains('div.HeaderFilter', co26).children('button').click()
+        scrollDown()
+        cy.contains(fact19).should('not.be.visible')
+        cy.contains(co26).should('not.be.visible')
     })
-
-
 
 
 })

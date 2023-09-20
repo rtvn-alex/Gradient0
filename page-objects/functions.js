@@ -107,7 +107,7 @@ export function textInSeveralElements(text, elements) {
 
 
 export function scrollDown() {
-    cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
+    cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 20000})
 }
 
 
