@@ -39,7 +39,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check deleting of header filters', () => {
+    it('should check deleting of header filters', () => {
         let fact19 = Cypress.env('somePeriod')
         let co26 = Cypress.env('someCO')
         scrollDown()
@@ -51,6 +51,36 @@ describe('basic tests', () => {
         scrollDown()
         cy.contains(fact19).should('not.be.visible')
         cy.contains(co26).should('not.be.visible')
+    })
+
+
+    it.only('should check deleting of filters via the list', () => {
+        clickAnElement('Настроить')
+        waitForElement('div.DsShellPanelLocations')
+        clickAnElement('Очистить все')
+        /*Cypress.env('activesWithoutYamal').forEach((act) => {
+            cy.contains('label.AppCheckbox', act).children('span.AppCheckbox__checkmark').should('not.be.checked')
+        })
+        */
+        cy.document().then((doc) => {
+            let marks = doc.querySelectorAll('span.AppCheckbox__checkmark')
+            marks.forEach((mark) => {
+                cy.get(mark).should('not.be.checked')
+            })
+            /*
+        cy.get('span.AppCheckbox__checkmark').then((marks) => {
+            marks.forEach((mark) => {
+                mark.should(not.be.checked)
+            })
+        })
+        clickAnElement('Применить')
+        cy.wait(1000)
+        waitForElementIsAbsent('span.Tag:nth-of-type(2)')
+        Cypress.env('activesWithoutYamal').forEach((act) => {
+            cy.contains(act).should('not.be.visible')
+        })
+        */
+        })
     })
 
 
