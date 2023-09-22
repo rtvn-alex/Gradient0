@@ -162,3 +162,19 @@ export function waitForRequest(alias, partialRequest, maxRequests, level = 0) {
         }
     })
 }
+
+
+export function countChildren(elements, parent) {
+    // считает, сколько элементов из списка elements являются прямыми потомками parent, а сколько не являются.
+    // пока только для двух родителей; если будет больше - нужно будет переписывать
+    let goodChildren, badChildren = 0
+    elements.forEach((el) => {
+        if (cy.get(el).parents() === cy.get(parent)) {
+            goodChildren++
+        }
+        else {
+            badChildren++
+        }
+        return goodChildren, badChildren
+    })
+}

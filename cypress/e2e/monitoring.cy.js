@@ -75,7 +75,7 @@ describe('basic tests', () => {
             //graphs.forEach((graph) => {
             let graphsQuantity = doc.querySelectorAll('div.GBarChart__Main').length
             let blocksQuantity = doc.querySelectorAll('div.GBarChart__XAxisBlock').length
-            expect(blocksQuantity).not.to.be.moreThan(graphsQuantity)
+            expect(blocksQuantity).not.to.be.above(graphsQuantity)
             //})
         })
     })

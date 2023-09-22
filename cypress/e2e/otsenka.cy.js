@@ -92,18 +92,20 @@ describe('basic tests', () => {
     })
 
 
-    it('should check deleting of actives from the list', () => {
+    it.only('should check deleting of actives from the list', () => {
         clickAnElement('Активы')
         waitForElement('div.ds_3.open')
         clickAnElement('Очистить все')
         Cypress.env('activesWithoutYamal').forEach((act) => {
-            cy.contains('label.AppCheckbox', act).children('span.AppCheckbox__checkmark').should('not.be.checked')
+            cy.contains('label.AppCheckbox', act).children(Cypress.env('checkboxSelector')).should('not.be.checked')
         })
         clickAnElement('Применить')
         cy.wait(1000)
         waitForElementIsAbsent('span.Tag:nth-of-type(2)')
+        cy.log(Cypress.env('activesWithoutYamal'))
+        scrollDown()
         Cypress.env('activesWithoutYamal').forEach((act) => {
-            cy.contains(act).should('not.be.visible')
+            cy.get('div.GBarChart__XAxisTitle').should('not.have.text', act)
         })
     })
 
@@ -150,7 +152,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check enlarging and diminishing', () => {
+    it('should check enlarging and diminishing', () => {
         cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
         cy.get('span.GBar__Title__Menu').first().click()
         zoomInAndOut('ul.GBarMenu>li:first-of-type')
