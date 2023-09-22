@@ -9,7 +9,8 @@ import {
     waitForElement,
     shouldContainText,
     scrollDown,
-    scrollUp
+    scrollUp,
+    waitForElementIsAbsent
 } from "../../page-objects/functions.js"
 
 
@@ -58,28 +59,24 @@ describe('basic tests', () => {
         clickAnElement('Настроить')
         waitForElement('div.DsShellPanelLocations')
         clickAnElement('Очистить все')
-        /*Cypress.env('activesWithoutYamal').forEach((act) => {
-            cy.contains('label.AppCheckbox', act).children('span.AppCheckbox__checkmark').should('not.be.checked')
-        })
-        */
+
         cy.document().then((doc) => {
             let marks = doc.querySelectorAll('span.AppCheckbox__checkmark')
             marks.forEach((mark) => {
                 cy.get(mark).should('not.be.checked')
             })
-            /*
-        cy.get('span.AppCheckbox__checkmark').then((marks) => {
-            marks.forEach((mark) => {
-                mark.should(not.be.checked)
-            })
         })
+
         clickAnElement('Применить')
         cy.wait(1000)
         waitForElementIsAbsent('span.Tag:nth-of-type(2)')
-        Cypress.env('activesWithoutYamal').forEach((act) => {
-            cy.contains(act).should('not.be.visible')
-        })
-        */
+        cy.document().then((doc) => {
+            //let graphs = doc.querySelectorAll('div.GBarChart__Main>')
+            //graphs.forEach((graph) => {
+            let graphsQuantity = doc.querySelectorAll('div.GBarChart__Main').length
+            let blocksQuantity = doc.querySelectorAll('div.GBarChart__XAxisBlock').length
+            expect(blocksQuantity).not.to.be.moreThan(graphsQuantity)
+            //})
         })
     })
 
