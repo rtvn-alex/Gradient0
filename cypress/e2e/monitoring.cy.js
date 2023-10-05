@@ -10,7 +10,8 @@ import {
     shouldContainText,
     scrollDown,
     scrollUp,
-    waitForElementIsAbsent
+    waitForElementIsAbsent,
+    countChildren
 } from "../../page-objects/functions.js"
 
 
@@ -24,6 +25,8 @@ describe('basic tests', () => {
         cy.wait(3000)
         clickAnElement('Мониторинг')
         cy.wait(5000)
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?units').as('dataUnits')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
     })
 
 
@@ -36,7 +39,7 @@ describe('basic tests', () => {
         cy.get('li.PaneList__Item.active>div').eq(0).should('have.text', 'Все процессы')                             //Установлено "Все процессы"
         cy.get('li.PaneList__Item.active>div').eq(1).should('have.text', 'Транспорт')                                //Выбрана статья "Транспорт"
         cy.get('div.GradientVizel__Potencial_Chart_GBar_Box').eq(2)                                                  //Непрозрачный сектор столбика
-          .should('have.attr', 'style').and('contain', 'opacity: 1')
+        .should('have.attr', 'style').and('contain', 'opacity: 1')
     })
 
 
@@ -55,13 +58,15 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check deleting of filters via the list', () => {
+    it('should check deleting and adding of filters via the list', () => {
+        // Нужно разобраться с подсчётом столбиков - см. ниже
+
         clickAnElement('Настроить')
         waitForElement('div.DsShellPanelLocations')
         clickAnElement('Очистить все')
 
         cy.document().then((doc) => {
-            let marks = doc.querySelectorAll('span.AppCheckbox__checkmark')
+            let marks = doc.querySelectorAll(Cypress.env('checkboxSelector'))
             marks.forEach((mark) => {
                 cy.get(mark).should('not.be.checked')
             })
@@ -71,14 +76,66 @@ describe('basic tests', () => {
         cy.wait(1000)
         waitForElementIsAbsent('span.Tag:nth-of-type(2)')
         cy.document().then((doc) => {
-            //let graphs = doc.querySelectorAll('div.GBarChart__Main>')
-            //graphs.forEach((graph) => {
             let graphsQuantity = doc.querySelectorAll('div.GBarChart__Main').length
             let blocksQuantity = doc.querySelectorAll('div.GBarChart__XAxisBlock').length
             expect(blocksQuantity).not.to.be.above(graphsQuantity)
-            //})
+        })
+
+        clickAnElement('Настроить')
+        waitForElement('div.DsShellPanelLocations')
+        cy.document().then((doc) => {
+            let marks = doc.querySelectorAll(Cypress.env('checkboxSelector'))
+            marks.forEach((mark) => {
+                cy.get(mark).click()
+            })
+        })
+        
+        clickAnElement('Применить')
+        scrollDown()
+        cy.document().then((doc) => {
+            cy.wait(3000)
+            let graphsQuantity = doc.querySelectorAll('div.GBarChart__Main').length                                                                   // графики
+            let periodsCheckboxesQuantity = doc.querySelectorAll('section.DsShellPanelLocations__MainSection:first-of-type label').length             // верхние чекбоксы
+            let orientsCheckboxesQuantity = doc.querySelectorAll('section.DsShellPanelLocations__MainSection:nth-of-type(2) label').length            // нижние чекбоксы
+            let blocksQuantity = doc.querySelectorAll('div.GBarChart__Bar').length                                                                    // столбики
+            let linesQuantity = doc.querySelectorAll('div.GBarChart__EtalonLine').length                                                              // линии
+            cy.log(graphsQuantity, blocksQuantity, linesQuantity, periodsCheckboxesQuantity, orientsCheckboxesQuantity)
+
+            //expect(blocksQuantity).to.be.eq((periodsCheckboxesQuantity + 1) * graphsQuantity)                                                       // УЗНАТЬ, ПОЧЕМУ ВИДНЫ 4 ВМЕСТО 20 
+
+            expect(linesQuantity).to.satisfy((lines) => {
+                return lines === orientsCheckboxesQuantity * graphsQuantity || lines === graphsQuantity * 2
+            })
         })
     })
 
 
+    it.only('should check months changing', () =>{
+        let month = 'Июнь'
+        let headers = [
+            ':nth-child(2) > .GradientVizel__Scatter_Wrapper > .GradientVizel__Scatter_Title',
+            ':nth-child(3) > .GradientVizel__Scatter_Wrapper > .GradientVizel__Scatter_Title',
+            '.GradientVizel__Title'
+        ]
+
+        headers.forEach((header) => {
+            cy.get(header).should('not.contain.text', month)
+        })
+        clickAnElement('Декабрь 2022')
+        clickAnElement(month.toLowerCase())
+
+        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?units').as('dataUnits')
+        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
+        cy.get('@dataUnits').then((xhr) => {
+            expect(xhr.request.body.filters.mnt_period[1]).to.be.eq('6+6')
+        })
+        cy.wait(500)
+        cy.get('@elPotencial').then((xhr) => {
+            expect(xhr.request.body.filters.mnt_period[1]).to.be.eq('6+6')
+        })
+
+        headers.forEach((header) => {
+            cy.get(header).should('contain.text', month)
+        })
+    })
 })

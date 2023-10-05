@@ -169,12 +169,16 @@ export function countChildren(elements, parent) {
     // пока только для двух родителей; если будет больше - нужно будет переписывать
     let goodChildren, badChildren = 0
     elements.forEach((el) => {
-        if (cy.get(el).parents() === cy.get(parent)) {
+        //if (cy.get(el).parents() === cy.get(parent)) {
+        //let parentz = Array.from(cy.get(el).parents())
+        //cy.log(parentz)
+        if (cy.get(el).closest(parent)) {
             goodChildren++
         }
         else {
             badChildren++
         }
-        return goodChildren, badChildren
+        
     })
+    return [goodChildren, badChildren]
 }
