@@ -34,10 +34,10 @@ describe('actions', () => {
     it('should check for correct changes after changing the measure unit', () => {
         cy.wait('@elDynamicChildren')
         cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
-        clickAnElement('тыс.руб./скв.')
+        clickAnElement(Cypress.env('someUnit'))
         cy.wait('@elDynamicChildren').then((xhr) => {
             expect(xhr.request.body.filters.unit_id[1]).to.be.eq(177)
-            expect(parseToJSON(xhr)[0]).to.have.property('unit', "тыс.руб./скв.")
+            expect(parseToJSON(xhr)[0]).to.have.property('unit', Cypress.env('someUnit'))
         })
     })
 

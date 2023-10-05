@@ -27,6 +27,7 @@ describe('basic tests', () => {
         cy.wait(5000)
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?units').as('dataUnits')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elMonitoring').as('elMonitoring')
     })
 
 
@@ -110,7 +111,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check months changing', () =>{
+    it('should check months changing', () =>{
         let month = 'Июнь'
         let headers = [
             ':nth-child(2) > .GradientVizel__Scatter_Wrapper > .GradientVizel__Scatter_Title',
@@ -137,5 +138,16 @@ describe('basic tests', () => {
         headers.forEach((header) => {
             cy.get(header).should('contain.text', month)
         })
+    })
+
+
+    it.only('should check units changing', () => {
+        cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
+        clickAnElement(Cypress.env('someUnit'))
+        cy.wait('@elMonitoring').then((xhr) => {
+            expect(xhr.request.body.filters.unit_id[1]).to.be.eq(177)
+        })
+        scrollDown()
+        cy.get('h2.GBar__Unit').first().should('have.text', Cypress.env('someUnit'))
     })
 })

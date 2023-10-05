@@ -302,7 +302,7 @@ describe('navigation tests', () => {
     })
 
 
-    it('should check metrics compairing', () => {
+    it('should check metrics comparing', () => {
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl')
         scrollDown()
         cy.get('span.GBar__Title__Menu').first().click()
