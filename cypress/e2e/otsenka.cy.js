@@ -92,7 +92,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check deleting of actives from the list', () => {
+    it('should check deleting of actives from the list', () => {
         clickAnElement('Активы')
         waitForElement('div.ds_3.open')
         clickAnElement('Очистить все')
@@ -140,6 +140,17 @@ describe('basic tests', () => {
             })
             cy.get('input[type="search"]').clear()
         }
+    })
+
+
+    it.only('should check the "graph-table" switcher', () => {
+        scrollDown()
+        clickAnElement('Таблица')
+        cy.get('table.GradientTable__Table').should('exist').and('be.visible')
+        waitForElementIsAbsent('li.GradientVizel__Chart')
+        clickAnElement('График')
+        cy.get('li.GradientVizel__Chart').should('exist').and('be.visible')
+        waitForElementIsAbsent('table.GradientTable__Table')
     })
 
 

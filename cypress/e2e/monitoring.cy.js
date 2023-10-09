@@ -11,7 +11,7 @@ import {
     scrollDown,
     scrollUp,
     waitForElementIsAbsent,
-    countChildren
+    switchLeftPaneElements
 } from "../../page-objects/functions.js"
 
 
@@ -59,7 +59,7 @@ describe('basic tests', () => {
     })
 
 
-    it('should check deleting and adding of filters via the list', () => {
+    it.skip('should check deleting and adding of filters via the list', () => {
         // Нужно разобраться с подсчётом столбиков - см. ниже
 
         clickAnElement('Настроить')
@@ -141,7 +141,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check units changing', () => {
+    it('should check units changing', () => {
         cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
         clickAnElement(Cypress.env('someUnit'))
         cy.wait('@elMonitoring').then((xhr) => {
@@ -149,5 +149,22 @@ describe('basic tests', () => {
         })
         scrollDown()
         cy.get('h2.GBar__Unit').first().should('have.text', Cypress.env('someUnit'))
+    })
+
+
+    it('should check the "graph-table" switcher', () => {
+        scrollDown()
+        clickAnElement('Таблица')
+        cy.get('table.GradientTable__Table').should('exist').and('be.visible')
+        waitForElementIsAbsent('li.GradientVizel__Chart')
+        clickAnElement('График')
+        cy.get('li.GradientVizel__Chart').should('exist').and('be.visible')
+        waitForElementIsAbsent('table.GradientTable__Table')
+    })
+
+
+    it.only('should switch the processes and articles', () => {
+        switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('articles'))
+        switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('processes'))
     })
 })
