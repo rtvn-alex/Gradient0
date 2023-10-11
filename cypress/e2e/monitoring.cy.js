@@ -163,8 +163,71 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should switch the processes and articles', () => {
+    it('should switch the processes and articles', () => {
         switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('articles'))
         switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('processes'))
+    })
+
+
+    it('should check changing of actives', () => {
+        // Тестируются только запросы;
+        // Подактивы пока не переключаются - ВЫЯСНИТЬ, ПОЧЕМУ
+        const act = Cypress.env('someAct')
+        clickAnElement('Ямал')
+        clickAnElement(act)
+        cy.wait(3000)
+        cy.get('@elPotencial').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
+        })
+    })
+
+
+    it('should check arrows functioning', () => {
+        const selectorHidden = '.GradientVizel__Change_Hide'
+        const arrows = [
+            'div.GradientVizel__Potencial_Change',
+            ':nth-child(2) > .GradientVizel__Scatter_Wrapper > .GradientVizel__Scatter_Change',
+            ':nth-child(3) > .GradientVizel__Scatter_Wrapper > .GradientVizel__Scatter_Change',
+            '.GradientVizel__Change'
+        ]
+
+        arrows.forEach((selector) => {
+            cy.get(selector).click()
+            cy.get(selector).parents().siblings(selectorHidden).should('exist')
+            cy.get(selector).click()
+            cy.get(selector).parents().siblings(selectorHidden).should('not.exist')
+        })
+    })
+
+
+    it.only('should check turning of monitoring steps', () => {
+        // переключается между всеми этапами мониторинга и проверяет для каждого 
+        //равенство количетва кружочков, количества строк и числа кружочков, указанного на диаграмме
+        const names = new Object({
+            "+2": ["Two", "Проработк"],
+            "+3": ["Three", "Реализац"],
+            "+4": ["Four", " эффекта"],
+            "+1": ["One", "Инициац"]
+    })
+        for (let key in names) {
+            let value = names[key][1]
+            cy.contains(value).click()
+            cy.get('.GradientVizel__Scatter_Box_Btn_Active')
+              .parent()
+              .should('contain.text', value)
+            cy.get('div.GradientVizel__Scatter_Title')
+              .last()
+              .should('contain.text', value.toLowerCase())
+            cy.document().then((doc) => {
+                let bubblesQuantity = doc.querySelectorAll(`div.GradientVizel__Scatter_Container_${names[key][0]}>.GradientVizel__Scatter_Container_Item`).length
+                let stringsQuantity = doc.querySelectorAll('div.GradientVizel__Table_Row').length - 1
+                let betterKey = +key * 2 + 1
+                cy.get(`:nth-child(${betterKey}) > .GradientVizel__Scatter_Container > .GradientVizel__Scatter_Container_Count`).then((el) => {
+                    let nmbr = +el.text().split(' ')[0]
+                    expect(bubblesQuantity).to.be.eq(nmbr)
+                    expect(bubblesQuantity).to.be.eq(stringsQuantity)
+                })
+            })
+        }
     })
 })

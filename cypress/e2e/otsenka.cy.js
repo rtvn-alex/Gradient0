@@ -212,12 +212,6 @@ describe('basic tests', () => {
     })
 
 
-    it('should switch the processes and articles', () => {
-        switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('articles'))
-        switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('processes'))
-    })
-
-
     it('should check changing of actives and subactives', () => {
         const act = Cypress.env('someAct')
         const subact = 'Южное'
