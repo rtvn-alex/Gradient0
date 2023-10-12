@@ -137,6 +137,8 @@ export function otsenka_drilldown(crumb) {
 
 
 export function waitForResponse(alias, partialResponse, maxRequests, level = 0) {
+    // ожидает запрос alias, в теле ответа которого содержится текст partialRequest
+    // в течение maxRequests попыток
     if (level === maxRequests) {
         throw `${maxRequests} requests exceeded`         // fail the test
     }
@@ -151,6 +153,8 @@ export function waitForResponse(alias, partialResponse, maxRequests, level = 0) 
 
 
 export function waitForRequest(alias, partialRequest, maxRequests, level = 0) {
+    // ожидает запрос alias, в теле запроса которого содержится текст partialRequest
+    // в течение maxRequests попыток
     if (level === maxRequests) {
         throw `${maxRequests} requests exceeded`         // fail the test
     }
@@ -169,9 +173,6 @@ export function countChildren(elements, parent) {
     // пока только для двух родителей; если будет больше - нужно будет переписывать
     let goodChildren, badChildren = 0
     elements.forEach((el) => {
-        //if (cy.get(el).parents() === cy.get(parent)) {
-        //let parentz = Array.from(cy.get(el).parents())
-        //cy.log(parentz)
         if (cy.get(el).closest(parent)) {
             goodChildren++
         }
@@ -181,4 +182,17 @@ export function countChildren(elements, parent) {
         
     })
     return [goodChildren, badChildren]
+}
+
+
+export function popupsCheck(element) {
+    // проверяет появление поп-апа при наведении крсора на element
+    // и его отсутствие до и после наведения
+    cy.get(element)
+      .should('have.attr', 'aria-expanded', 'false')
+      .trigger('mouseenter').wait(200)
+      .should('have.attr', 'aria-expanded', 'true')
+      .trigger('mouseleave', {force: true})
+      .wait(50)
+      .should('have.attr', 'aria-expanded', 'false')
 }

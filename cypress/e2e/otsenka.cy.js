@@ -20,7 +20,8 @@ import {
     otsenka_drilldown,
     scrollDown,
     scrollUp,
-    waitForRequest
+    waitForRequest,
+    popupsCheck
 } from "../../page-objects/functions.js"
 
 
@@ -143,7 +144,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check the "graph-table" switcher', () => {
+    it('should check the "graph-table" switcher', () => {
         scrollDown()
         clickAnElement('Таблица')
         cy.get('table.GradientTable__Table').should('exist').and('be.visible')
@@ -200,12 +201,7 @@ describe('basic tests', () => {
         cy.document().then((doc) => {
             let columns = doc.querySelectorAll('div.GBarChart__XAxisBlock')
             columns.forEach((column) => {
-                cy.get(column)
-                .should('have.attr', 'aria-expanded', 'false')
-                .trigger('mouseenter').wait(200)
-                .should('have.attr', 'aria-expanded', 'true')
-                .trigger('mouseleave', 'bottom').wait(200)
-                .should('have.attr', 'aria-expanded', 'false')
+                popupsCheck(column)
             })
         })
         
