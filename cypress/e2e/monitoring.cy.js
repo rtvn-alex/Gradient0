@@ -12,7 +12,10 @@ import {
     scrollUp,
     waitForElementIsAbsent,
     switchLeftPaneElements,
-    popupsCheck
+    popupsCheck,
+    drillThatDown,
+    waitForRequest,
+    backByBreadcrumbs
 } from "../../page-objects/functions.js"
 
 
@@ -233,7 +236,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check appearing of pop-ups when pointing on elements', () => {
+    it('should check appearing of pop-ups when pointing on elements', () => {
         waitForElement(':first-of-type > div.GradientVizel__Potencial_Chart_GBar_Container > div.GradientVizel__Potencial_Chart_GBar_Box')
         cy.document().then((doc) => {       
             let columns = doc.querySelectorAll(':first-of-type > div.GradientVizel__Potencial_Chart_GBar_Container > div.GradientVizel__Potencial_Chart_GBar_Box')
@@ -241,5 +244,21 @@ describe('basic tests', () => {
                 popupsCheck(column)
             })
         })
+    })
+
+
+    it.only('should check drilling down and up', () => {
+        const crumbs = Cypress.env('breadCrumbs')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elOrientir').as('elOrientir')
+        drillThatDown(crumbs[1])
+        waitForRequest('@elOrientir', {body: {filters: {cost_sub_categories_id: ["=", 112]}}}, 10)
+        cy.get('@elOrientir')
+          .its('request.body.filters.cost_sub_categories_id[1]').should('to.be.eq', 112)
+
+        drillThatDown(crumbs[2])
+        cy.wait('@elOrientir').then((xhr) => {
+            expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2) 
+        })
+        backByBreadcrumbs(2)
     })
 })

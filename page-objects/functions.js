@@ -124,7 +124,7 @@ export function shouldBeInBreadcrumbs(text) {
 }
 
 
-export function otsenka_drilldown(crumb) {
+export function drillThatDown(crumb) {
     scrollDown()
     cy.wait(2000)
     cy.get(`span[title="${crumb}"]`).click()
@@ -195,4 +195,14 @@ export function popupsCheck(element) {
       .trigger('mouseleave', {force: true})
       .wait(50)
       .should('have.attr', 'aria-expanded', 'false')
+}
+
+
+export function backByBreadcrumbs(n) {
+    const crumbs = Cypress.env('breadCrumbs')
+    cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[n])
+    for (let i = n; i > 0; i--) {
+        cy.get('li.GBreadcrumbs__Item').eq(i-1).click()
+        cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[i - 1])
+    }
 }

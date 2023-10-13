@@ -17,11 +17,12 @@ import {
     shouldContainText,
     textInSeveralElements,
     //shouldBeInBreadcrumbs,
-    otsenka_drilldown,
+    drillThatDown,
     scrollDown,
     scrollUp,
     waitForRequest,
-    popupsCheck
+    popupsCheck,
+    backByBreadcrumbs
 } from "../../page-objects/functions.js"
 
 
@@ -261,34 +262,29 @@ describe('navigation tests', () => {
 
 
     it('should check drilling down and up', () => {
-        const crumbs = Cypress.env('otsenkaCrumbs')
+        const crumbs = Cypress.env('breadCrumbs')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl2')
 
-        otsenka_drilldown(crumbs[1])
+        drillThatDown(crumbs[1])
         waitForRequest('@dataEl2', {body: {filters: {cost_sub_categories_id: ["=", 112]}}}, 10)
         cy.get('@dataEl2')
         .its('request.body.filters.cost_sub_categories_id[1]').should('to.be.eq', 112)
 
-        otsenka_drilldown(crumbs[2])
+        drillThatDown(crumbs[2])
         cy.wait('@dataEl2').then((xhr) => {
             expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2)                // Проверка запроса 
         })
 
-        otsenka_drilldown(crumbs[3])
+        drillThatDown(crumbs[3])
         cy.wait('@dataEl2').then((xhr) => {
             expect(xhr.request.body.filters.class_code3[1]).to.be.eq(20110)                // Проверка запроса 
         })
         
-        otsenka_drilldown(crumbs[4])
+        drillThatDown(crumbs[4])
         waitForElementIsAbsent('ul.GradientVizel__Charts')
 
         scrollUp()
-        let n = 4                                                                        // Возврат по breadcrumbs
-        cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[4])
-        for (let i = n; i > 0; i--) {
-            cy.get('li.GBreadcrumbs__Item').eq(i-1).click()
-            cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[i - 1])
-        }
+        backByBreadcrumbs(4)
     })
 
 
