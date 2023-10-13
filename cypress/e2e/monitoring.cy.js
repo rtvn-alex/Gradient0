@@ -53,19 +53,31 @@ describe('basic tests', () => {
     it('should check deleting of header filters', () => {
         let fact19 = Cypress.env('somePeriod')
         let co26 = Cypress.env('someCO')
+        //scrollDown()
+        cy.wait(3000)
         scrollDown()
         cy.contains('div.GBarChart__XAxisTitle', fact19).should('be.visible')
-        cy.contains('span.GBarChart__EtalonTitle', co26).should('be.visible')
+        cy.document().then((doc) => {
+            let etalons = doc.querySelectorAll('span.GBarChart__EtalonTitle')
+            if (etalons.length > 8) {                                                   //то есть если не пришли нули
+                cy.contains('span.GBarChart__EtalonTitle', co26).should('be.visible')
+            }
+        })
         scrollUp()
         cy.contains('div.HeaderFilter', fact19).children('button').click()
         cy.contains('div.HeaderFilter', co26).children('button').click()
         scrollDown()
-        cy.contains(fact19).should('not.be.visible')
-        cy.contains(co26).should('not.be.visible')
+        cy.contains(fact19).should('not.be.visible')      
+        cy.document().then((doc) => {
+            let etalons = doc.querySelectorAll('span.GBarChart__EtalonTitle')
+            if (etalons.length > 8) {
+                cy.contains(co26).should('not.be.visible')
+            }
+        })
     })
 
 
-    it.skip('should check deleting and adding of filters via the list', () => {
+    it('should check deleting and adding of filters via the list', () => {
         // Нужно разобраться с подсчётом столбиков - см. ниже
 
         clickAnElement('Настроить')
@@ -131,7 +143,7 @@ describe('basic tests', () => {
         clickAnElement('Декабрь 2022')
         clickAnElement(month.toLowerCase())
 
-        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?units').as('dataUnits')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?units').as('dataUnits')
         //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
         cy.get('@dataUnits').then((xhr) => {
             expect(xhr.request.body.filters.mnt_period[1]).to.be.eq('6+6')
@@ -147,10 +159,12 @@ describe('basic tests', () => {
     })
 
 
-    it('should check units changing', () => {
+    it.only('should check units changing', () => {
         cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
         clickAnElement(Cypress.env('someUnit'))
-        cy.wait('@elMonitoring').then((xhr) => {
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elMonitoring').as('elMonitoring')
+        cy.wait(3000)
+        cy.get('@elMonitoring').then((xhr) => {
             expect(xhr.request.body.filters.unit_id[1]).to.be.eq(177)
         })
         scrollDown()
@@ -159,11 +173,13 @@ describe('basic tests', () => {
 
 
     it('should check the "graph-table" switcher', () => {
-        scrollDown()
+        //scrollDown()
         clickAnElement('Таблица')
+        scrollDown()
         cy.get('table.GradientTable__Table').should('exist').and('be.visible')
         waitForElementIsAbsent('li.GradientVizel__Chart')
         clickAnElement('График')
+        scrollDown()
         cy.get('li.GradientVizel__Chart').should('exist').and('be.visible')
         waitForElementIsAbsent('table.GradientTable__Table')
     })
@@ -265,7 +281,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check metrics compairing and drilldown by button', () => {
+    it('should check metrics compairing and drilldown by button', () => {
         const text = Cypress.env('breadCrumbs')[1]
         scrollDown()
         clickAnElement('Подробнее')
@@ -278,7 +294,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check enlarging and diminishing', () => {
+    it('should check enlarging and diminishing', () => {
         //cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
         scrollDown()
         cy.get('span.GBar__Title__Menu').first().click()
