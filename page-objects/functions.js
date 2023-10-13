@@ -206,3 +206,19 @@ export function backByBreadcrumbs(n) {
         cy.get('li.GBreadcrumbs__Item').last().should('have.text', crumbs[i - 1])
     }
 }
+
+
+export function metricsCompairing(alias) {
+    scrollDown()
+    cy.get('span.GBar__Title__Menu').first().click()
+    clickAnElement('Сравнение по метрикам')
+    waitForElement('div.GradientVizel__Modal')
+    shouldContainText('div.OpenModalContainer__Content div.GradientVizel__Title', 'Транспортные услуги')
+    
+    cy.get(alias).then((xhr) => {
+        expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)                // Проверка запроса 
+    })
+
+    cy.get('i.GradientVizel__ModalClose').click()
+    waitForElementIsAbsent('div.GradientVizel__Modal')
+}

@@ -15,7 +15,9 @@ import {
     popupsCheck,
     drillThatDown,
     waitForRequest,
-    backByBreadcrumbs
+    backByBreadcrumbs,
+    metricsCompairing,
+    zoomInAndOut
 } from "../../page-objects/functions.js"
 
 
@@ -247,7 +249,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check drilling down and up', () => {
+    it('should check drilling down and up', () => {
         const crumbs = Cypress.env('breadCrumbs')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elOrientir').as('elOrientir')
         drillThatDown(crumbs[1])
@@ -260,5 +262,27 @@ describe('basic tests', () => {
             expect(xhr.request.body.filters.class_code1[1]).to.be.eq(2) 
         })
         backByBreadcrumbs(2)
+    })
+
+
+    it.only('should check metrics compairing and drilldown by button', () => {
+        const text = Cypress.env('breadCrumbs')[1]
+        scrollDown()
+        clickAnElement('Подробнее')
+        cy.get('li.GBreadcrumbs__Item:nth-child(2) > span').should('have.text', text)
+        shouldContainText('div.GradientVizel__Title', text)
+        cy.get('li.GBreadcrumbs__Item').first().click()
+
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elOrientir').as('elOrientir')
+        metricsCompairing('@elOrientir')
+    })
+
+
+    it.only('should check enlarging and diminishing', () => {
+        //cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
+        scrollDown()
+        cy.get('span.GBar__Title__Menu').first().click()
+        zoomInAndOut('ul.GBarMenu>li:first-of-type')
+        zoomInAndOut('div#zoomIn')       
     })
 })

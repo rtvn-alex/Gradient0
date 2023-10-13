@@ -22,7 +22,8 @@ import './commands'
 Cypress.on('uncaught:exception', (err, runnable) => {
     // returning false here prevents Cypress from
     // failing the test
-    if (err.message.includes('dataPeriods')) {
+    if ((err.message.includes('dataPeriods'))
+    || (err.message.includes('cancel 0'))) {
             // we expected this error, so let's ignore it
             // and let the test continue
                 return false
