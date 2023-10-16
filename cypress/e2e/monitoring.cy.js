@@ -159,7 +159,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check units changing', () => {
+    it('should check units changing', () => {
         cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
         clickAnElement(Cypress.env('someUnit'))
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elMonitoring').as('elMonitoring')
