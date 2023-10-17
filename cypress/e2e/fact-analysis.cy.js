@@ -9,7 +9,11 @@ import {
     shouldContainText, 
     shouldHaveText, 
     waitForElement, 
-    endingsCheck
+    endingsCheck,
+    switchLeftPaneElements,
+    numberFromString,
+    popupsCheck,
+    numberFromElementText
 } from "../../page-objects/functions.js"
 
 
@@ -68,6 +72,41 @@ describe('basic tests', () => {
     })
 
 
+    it('should switch articles', () => {
+        switchLeftPaneElements('li.GBreadcrumbs__Item > span', Cypress.env('articles'))
+    })
+
+
+    it('should check changing of actives', () => {
+        // Тестируются только запросы;
+        // Подактивы пока не переключаются - ВЫЯСНИТЬ, ПОЧЕМУ
+        const act = Cypress.env('someAct')
+        clickAnElement('Ямал')
+        clickAnElement(act)
+        cy.wait(3000)
+        cy.get('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
+        })
+        cy.get('@dataUnits').then((xhr) => {
+            expect(xhr.request.body.filters.do_code[1]).to.be.eq(4)
+        })
+    })
+
+
+    it.only('should check appearing of pop-ups when pointing on elements', () => {
+        cy.wait(5000)
+        cy.document().then((doc) => {
+            let lines = doc.querySelectorAll('div.GbarHorizontal__Line')
+            lines.forEach((line) => {
+                cy.get(line).siblings('.GbarHorizontal__Percent').find(':nth-child(11) > .GbarHorizontal__Units_Value').then((val) => {
+                    let num = numberFromString(val.text())
+                    cy.log(num)
+                    if (num != 0)
+                        popupsCheck(line)
+                })
+            })
+        })
+    })
 
 
 

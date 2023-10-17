@@ -18,7 +18,8 @@ import {
     backByBreadcrumbs,
     metricsCompairing,
     zoomInAndOut,
-    shouldHaveText
+    shouldHaveText,
+    numberFromString
 } from "../../page-objects/functions.js"
 
 
@@ -224,7 +225,7 @@ describe('basic tests', () => {
     })
 
 
-    it('should check turning of monitoring steps', () => {
+    it.only('should check turning of monitoring steps', () => {
         // переключается между всеми этапами мониторинга и проверяет для каждого 
         //равенство количетва кружочков, количества строк и числа кружочков, указанного на диаграмме
         const names = new Object({
@@ -247,8 +248,8 @@ describe('basic tests', () => {
                 let stringsQuantity = doc.querySelectorAll('div.GradientVizel__Table_Row').length - 1
                 let betterKey = +key * 2 + 1
                 cy.get(`:nth-child(${betterKey}) > .GradientVizel__Scatter_Container > .GradientVizel__Scatter_Container_Count`).then((el) => {
-                    let nmbr = +el.text().split(' ')[0]
-                    expect(bubblesQuantity).to.be.eq(nmbr)
+                    //let nmbr = +el.text().split(' ')[0]
+                    expect(bubblesQuantity).to.be.eq(numberFromString(el.text()))
                     expect(bubblesQuantity).to.be.eq(stringsQuantity)
                 })
             })

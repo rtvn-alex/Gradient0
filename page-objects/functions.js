@@ -250,3 +250,16 @@ export function endingsCheck() {
         }
     })
 }
+
+
+export function numberFromString(str) {
+    return +str.split(' ')[0]
+}
+
+
+export function numberFromElementText(selector) {
+    cy.get(selector).then((el) => {
+        let num = +el.text().split(' ')[0]
+        return num
+    })
+}
