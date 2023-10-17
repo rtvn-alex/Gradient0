@@ -8,7 +8,8 @@ import {
     enterGradient,
     shouldContainText, 
     shouldHaveText, 
-    waitForElement 
+    waitForElement, 
+    endingsCheck
 } from "../../page-objects/functions.js"
 
 
@@ -22,6 +23,8 @@ describe('basic tests', () => {
         //cy.wait(3000)
         clickAnElement('Факторный анализ')
         //cy.wait(5000)
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_7/data?el').as('dataEl')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_7/data?units').as('dataUnits')
     })
 
 
@@ -31,16 +34,42 @@ describe('basic tests', () => {
         shouldHaveText('div > div.MainPane__PeriodsSelectLabel', '12+0')
         shouldHaveText('div.CustomDatePickerTrigger > span', '2022')
         shouldHaveText('li.PaneList__Item.active > div', 'Транспорт')
-        cy.get(':nth-child(1) > .GbarHorizontal__Box > .GbarHorizontal__Percent > .GbarHorizontal__Percent_Box > :nth-child(11) > .GbarHorizontal__Units_Value').then((el) => {
-            let txt = el.text()
-            for (let i = 2; i <= 4; i++) {
-                shouldHaveText(`:nth-child(${i}) > .GbarHorizontal__Box > .GbarHorizontal__Percent > .GbarHorizontal__Percent_Box > :nth-child(11) > .GbarHorizontal__Units_Value`, txt)
-            }
-        })
-        // cy.get(':nth-child(1) > .GbarHorizontal__Box > .GbarHorizontal__Percent > .GbarHorizontal__Percent_Box > :nth-child(11) > .GbarHorizontal__Units_Value')
-        // cy.get(':nth-child(2) > .GbarHorizontal__Box > .GbarHorizontal__Percent > .GbarHorizontal__Percent_Box > :nth-child(11) > .GbarHorizontal__Units_Value')
-        // cy.get(':nth-child(4) > .GbarHorizontal__Box > .GbarHorizontal__Percent > .GbarHorizontal__Percent_Box > :nth-child(11) > .GbarHorizontal__Units_Value')
+        endingsCheck()
     })
+
+
+    it('should check plan+fact changing', () => {
+        let fp = '3+9'
+        clickAnElement('12+0')
+        clickAnElement(fp)
+        shouldContainText('div.GradientVizel__Title', fp)
+        endingsCheck()
+        cy.get('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.mnt_period[1]).to.be.eq(fp)
+        })
+        cy.get('@dataUnits').then((xhr) => {
+            expect(xhr.request.body.filters.mnt_period[1]).to.be.eq(fp)
+        })
+    })
+
+
+    it('should check year changing', () => {
+        let yer = '2020'
+        clickAnElement('2022')
+        clickAnElement(yer)
+        shouldContainText('div.GradientVizel__Title', yer)
+        endingsCheck()
+        cy.get('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.dt[1]).to.be.eq(yer)
+        })
+        cy.get('@dataUnits').then((xhr) => {
+            expect(xhr.request.body.filters.dt[1]).to.be.eq(yer)
+        })
+    })
+
+
+
+
 
 
 

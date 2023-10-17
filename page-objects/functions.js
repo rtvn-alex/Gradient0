@@ -4,39 +4,48 @@ export function navigate() {
     cy.visit(Cypress.env('baseUrl'))
 }
 
+
 export function auth() {
     cy.get('input[autocomplete="username"]').type(Cypress.env('login'))
     cy.get('input[autocomplete="current-password"]').type(Cypress.env('password') + '{enter}')
 }
 
+
 export function clickAnElement(text) {
     cy.contains(text).click()
 }
+
 
 export function shouldContainText(selector, text) {
     cy.get(selector, {timeout: 8000}).should('contain.text', text)
 }
 
+
 export function shouldHaveText(selector, text) {
     cy.get(selector, {timeout: 8000}).should('have.text', text)
 }
+
 
 export function enterGradient() {
     clickAnElement('Визуализации')
     clickAnElement('LС Нефть')
 }
 
+
 export function waitForElement(el) {
     cy.get(el, {timeout: 10000}).should('exist')
 }
+
 
 export function waitForElementIsAbsent(el) {
     cy.get(el).should('not.exist')
 }
 
+
 export function showElement(el) {
     cy.get(el, {timeout: 10000}).should('be.visible')
 }
+
 
 export function searchProcessInHeader(name) {
     // Не используется
@@ -46,6 +55,7 @@ export function searchProcessInHeader(name) {
     })
 }
 
+
 export function searchArticleInHeader(name) {
     // Не используется    
     Cypress.env('articles').forEach(el => {
@@ -54,6 +64,7 @@ export function searchArticleInHeader(name) {
     })
 }
 
+
 export function switchLeftPaneElements(headerName, list) {
     //проверка на активность элемента (?)
     list.forEach(el => {
@@ -61,6 +72,7 @@ export function switchLeftPaneElements(headerName, list) {
         shouldContainText(headerName, el)
     })
 }
+
 
 export function parseToJSON(xhr) {
     // парсинг stream+json в json
@@ -74,6 +86,7 @@ export function parseToJSON(xhr) {
     }
     return data
 }
+
 
 export function checkNormalisation(txt) {
     clickAnElement(txt)
@@ -225,4 +238,15 @@ export function metricsCompairing(alias) {
 
     cy.get('i.GradientVizel__ModalClose').click()
     waitForElementIsAbsent('div.GradientVizel__Modal')
+}
+
+
+export function endingsCheck() {
+    // проверяет, что у всех 4-х виджетов одинаковые числовые значения (в виде строк)
+    cy.get(':nth-child(1) > .GbarHorizontal__Box > .GbarHorizontal__Percent > .GbarHorizontal__Percent_Box > :nth-child(11) > .GbarHorizontal__Units_Value').then((el) => {
+        let txt = el.text()
+        for (let i = 2; i <= 4; i++) {
+            shouldHaveText(`:nth-child(${i}) > .GbarHorizontal__Box > .GbarHorizontal__Percent > .GbarHorizontal__Percent_Box > :nth-child(11) > .GbarHorizontal__Units_Value`, txt)
+        }
+    })
 }
