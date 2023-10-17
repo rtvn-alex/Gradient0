@@ -16,7 +16,7 @@ import {
     switchLeftPaneElements,
     shouldContainText,
     textInSeveralElements,
-    //shouldBeInBreadcrumbs,
+    shouldHaveText,
     drillThatDown,
     scrollDown,
     scrollUp,
@@ -41,8 +41,8 @@ describe('basic tests', () => {
     it('should check the page and elements', () => {
         waitForElement('article.GradientVizel:nth-of-type(2)')                                          //загружаются 2 графика
         waitForElement('span.Tag:nth-of-type(7)')                                                       //загружаются 7 активов
-        cy.get(('div.MainPane__SwitchViewButtons>button.AppButton.active')).should('have.text', 'График')       //Переключатель в востоянии "График"
-        cy.get('button.AppButton_Size_Sm.active').should('have.text', 'Без нормализации')                       //Переключатель в востоянии "Без нормализации"
+        shouldHaveText('div.MainPane__SwitchViewButtons>button.AppButton.active', 'График')       //Переключатель в востоянии "График"
+        shouldHaveText('button.AppButton_Size_Sm.active', 'Без нормализации')                       //Переключатель в востоянии "Без нормализации"
         cy.contains('руб./тн').should('exist')                                                                  //Установлена размерность 'руб./тн'
     })
 
@@ -62,7 +62,7 @@ describe('basic tests', () => {
 
     it('should check changing of names after switching "plan+fact"', () => {
         cy.get('button.PeriodsSelector__Button:nth-of-type(4)').click()
-        cy.get('button.PeriodsSelector__Button.active').should('have.text', '9+3')
+        shouldHaveText('button.PeriodsSelector__Button.active', '9+3')
         shouldContainText('.GradientVizel__Potencial_Title', '9+3')
         shouldContainText('.GradientVizel__Title', '9+3')
     })
@@ -80,7 +80,8 @@ describe('basic tests', () => {
     it('should change the year', () => {
         cy.get('div.CustomDatePickerTrigger').click()
         cy.get('div.react-datepicker__year-text').eq(4).click()
-        cy.get('.GradientVizel__Potencial_Title').should('contain.text', '2021')          
+        //cy.get('.GradientVizel__Potencial_Title').should('contain.text', '2021')   
+        shouldContainText('.GradientVizel__Potencial_Title', '2021')       
         shouldContainText('.GradientVizel__Title', '2021')
         waitForElementIsAbsent('div.react-datepicker__year--container')
     })
@@ -166,7 +167,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check enlarging and diminishing', () => {
+    it('should check enlarging and diminishing', () => {
         //cy.get('div.DsShellMain').scrollTo('bottom', {timeout: 8000})
         scrollDown()
         cy.get('span.GBar__Title__Menu').first().click()

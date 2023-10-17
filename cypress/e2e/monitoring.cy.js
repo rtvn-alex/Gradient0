@@ -17,7 +17,8 @@ import {
     waitForRequest,
     backByBreadcrumbs,
     metricsCompairing,
-    zoomInAndOut
+    zoomInAndOut,
+    shouldHaveText
 } from "../../page-objects/functions.js"
 
 
@@ -41,12 +42,14 @@ describe('basic tests', () => {
         cy.wait(5000)
         waitForElement('article.GradientVizel:nth-of-type(3)')                                                    //загружается 3 график
         //waitForElement('.DsShell__Body > :nth-child(4)')
-        cy.get(('div.MainPane__SwitchViewButtons>button.AppButton.active span')).should('have.text', 'График')       //Переключатель в состоянии "График"                       
+        shouldHaveText('div.MainPane__SwitchViewButtons>button.AppButton.active span', 'График')                     //Переключатель в состоянии "График"                       
         cy.contains('руб./тн').should('exist')                                                                       //Установлена размерность 'руб./тн'
         cy.get('li.PaneList__Item.active>div').eq(0).should('have.text', 'Все процессы')                             //Установлено "Все процессы"
         cy.get('li.PaneList__Item.active>div').eq(1).should('have.text', 'Транспорт')                                //Выбрана статья "Транспорт"
-        cy.get('div.GradientVizel__Potencial_Chart_GBar_Box').eq(2)                                                  //Непрозрачный сектор столбика
-        .should('have.attr', 'style').and('contain', 'opacity: 1')
+        cy.get('div.GradientVizel__Potencial_Chart_GBar_Box')
+          .eq(2)                                                  //Непрозрачный сектор столбика
+          .should('have.attr', 'style')
+          .and('contain', 'opacity: 1')
     })
 
 
@@ -144,7 +147,6 @@ describe('basic tests', () => {
         clickAnElement(month.toLowerCase())
 
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?units').as('dataUnits')
-        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
         cy.get('@dataUnits').then((xhr) => {
             expect(xhr.request.body.filters.mnt_period[1]).to.be.eq('6+6')
         })
@@ -154,7 +156,7 @@ describe('basic tests', () => {
         })
 
         headers.forEach((header) => {
-            cy.get(header).should('contain.text', month)
+            shouldContainText(header, month)
         })
     })
 
@@ -285,7 +287,7 @@ describe('basic tests', () => {
         const text = Cypress.env('breadCrumbs')[1]
         scrollDown()
         clickAnElement('Подробнее')
-        cy.get('li.GBreadcrumbs__Item:nth-child(2) > span').should('have.text', text)
+        shouldHaveText('li.GBreadcrumbs__Item:nth-child(2) > span', text)
         shouldContainText('div.GradientVizel__Title', text)
         cy.get('li.GBreadcrumbs__Item').first().click()
 

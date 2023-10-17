@@ -10,7 +10,8 @@ import {
     searchProcessInHeader,
     searchArticleInHeader,
     switchLeftPaneElements,
-    shouldContainText
+    shouldContainText,
+    shouldHaveText
 } from "../../page-objects/functions.js"
 
 
@@ -22,7 +23,7 @@ describe('demo actions', () => {
     })
 
 
-    it.only('should turn the screens through', () => {
+    it('should turn the screens through', () => {
         clickAnElement('Оценка потенциала')
         showElement(Cypress.env('diagramSelectorAlternative'))
         cy.wait(1500)
@@ -81,7 +82,7 @@ describe('demo actions', () => {
         cy.wait(3000)
         clickAnElement('Не выбрано')
         clickAnElement('Новопортовское')
-        cy.get('div.MainPane__TagsGroup span:nth-child(1) span').should('have.text', 'Новопортовское')
+        shouldHaveText('div.MainPane__TagsGroup span:nth-child(1) span', 'Новопортовское')
     })
 
 

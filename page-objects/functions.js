@@ -17,6 +17,10 @@ export function shouldContainText(selector, text) {
     cy.get(selector, {timeout: 8000}).should('contain.text', text)
 }
 
+export function shouldHaveText(selector, text) {
+    cy.get(selector, {timeout: 8000}).should('have.text', text)
+}
+
 export function enterGradient() {
     clickAnElement('Визуализации')
     clickAnElement('LС Нефть')
