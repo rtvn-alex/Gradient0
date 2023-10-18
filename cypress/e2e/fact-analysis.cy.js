@@ -44,6 +44,7 @@ describe('basic tests', () => {
 
     it('should check plan+fact changing', () => {
         let fp = '3+9'
+        waitForElement('div.GradientVizel__Charts')
         clickAnElement('12+0')
         clickAnElement(fp)
         shouldContainText('div.GradientVizel__Title', fp)
@@ -93,7 +94,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check appearing of pop-ups when pointing on elements', () => {
+    it('should check appearing of pop-ups when pointing on elements', () => {
         cy.wait(5000)
         cy.document().then((doc) => {
             let lines = doc.querySelectorAll('div.GbarHorizontal__Line')
@@ -101,16 +102,43 @@ describe('basic tests', () => {
                 cy.get(line).siblings('.GbarHorizontal__Percent').find(':nth-child(11) > .GbarHorizontal__Units_Value').then((val) => {
                     let num = numberFromString(val.text())
                     cy.log(num)
-                    if (num != 0)
-                        popupsCheck(line)
+                    if (num != 0) {
+                        cy.get(line).find('.BackgroundStandart').then((firstLine) => {
+                            popupsCheck(firstLine)
+                        })
+                    }
                 })
             })
         })
     })
 
 
+    it('should check navigation', () => {
+        let txt = Cypress.env('breadCrumbs')[1]
+        waitForElement('div.GradientVizel__Charts')
+        cy.contains('li.GBarChartWithTabs__Tab', txt).click()
+        //cy.wait(3000)
+        cy.get('.GBreadcrumbs__Item > span').last().should('have.text', txt)
+        shouldContainText('div.GradientVizel__Title', txt)
 
+        cy.get('@dataEl').then((xhr) => {
+            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)
+        })
+        cy.get('@dataUnits').then((xhr) => {
+            expect(xhr.request.body.filters.cost_sub_categories_id[1]).to.be.eq(112)
+        })
+    })
+    
 
+    it.only('should check directing to Modeling page', () => {
+        // Блокируется ошибкой в коде - карточка
+        // https://wekan.spb.luxms.com/b/JwBS9R9iSvJcGEzeK/gradient/2WZEpHEwSLBRfXaue
+        cy.wait(3000)
+        cy.get('div.GbarHorizontal__Line').first().trigger('mouseenter')
+        clickAnElement('Подробнее', { force: true })
+        cy.wait(3000)
+        cy.url().should('contain.text', 'ds_brd_gradient_6')
+    })
 
 
 })
