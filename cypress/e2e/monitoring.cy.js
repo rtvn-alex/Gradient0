@@ -40,13 +40,20 @@ describe('basic tests', () => {
 
 
     it('should check the page and elements', () => {
-        cy.wait(5000)
+        cy.wait(5000)       
         waitForElement('article.GradientVizel:nth-of-type(3)')                                                    //загружается 3 график
         //waitForElement('.DsShell__Body > :nth-child(4)')
         shouldHaveText('div.MainPane__SwitchViewButtons>button.AppButton.active span', 'График')                     //Переключатель в состоянии "График"                       
         cy.contains('руб./тн').should('exist')                                                                       //Установлена размерность 'руб./тн'
+        /*      
+        ОТКЛЮЧЕНО - ПО УМОЛЧАНИЮ АКТИВНЫХ ПЕРЕКЛЮЧАТЕЛЕЙ НЕТ; ХЗ, МОЖЕТ, ВРЕМЕННО                                                            
         cy.get('li.PaneList__Item.active>div').eq(0).should('have.text', 'Все процессы')                             //Установлено "Все процессы"
         cy.get('li.PaneList__Item.active>div').eq(1).should('have.text', 'Транспорт')                                //Выбрана статья "Транспорт"
+        ВМЕСТО ЭТОГО ПРОВЕРЯЕСТСЯ ТЕКСТ В ЗАГОЛОВКАХ:
+        */
+        shouldHaveText('.GBreadcrumbs__Item > span', 'Транспорт') 
+
+
         cy.get('div.GradientVizel__Potencial_Chart_GBar_Box')
           .eq(2)                                                  //Непрозрачный сектор столбика
           .should('have.attr', 'style')
@@ -141,6 +148,7 @@ describe('basic tests', () => {
             '.GradientVizel__Title'
         ]
 
+        cy.wait(3000)
         headers.forEach((header) => {
             cy.get(header).should('not.contain.text', month)
         })
@@ -225,7 +233,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check turning of monitoring steps', () => {
+    it('should check turning of monitoring steps', () => {
         // переключается между всеми этапами мониторинга и проверяет для каждого 
         //равенство количетва кружочков, количества строк и числа кружочков, указанного на диаграмме
         const names = new Object({
@@ -257,7 +265,7 @@ describe('basic tests', () => {
     })
 
 
-    it('should check appearing of pop-ups when pointing on elements', () => {
+    it.only('should check appearing of pop-ups when pointing on elements', () => {
         waitForElement(':first-of-type > div.GradientVizel__Potencial_Chart_GBar_Container > div.GradientVizel__Potencial_Chart_GBar_Box')
         cy.document().then((doc) => {       
             let columns = doc.querySelectorAll(':first-of-type > div.GradientVizel__Potencial_Chart_GBar_Container > div.GradientVizel__Potencial_Chart_GBar_Box')

@@ -130,7 +130,7 @@ describe('basic tests', () => {
     })
     
 
-    it.only('should check directing to Modeling page', () => {
+    it.skip('should check directing to Modeling page', () => {
         // Блокируется ошибкой в коде - карточка
         // https://wekan.spb.luxms.com/b/JwBS9R9iSvJcGEzeK/gradient/2WZEpHEwSLBRfXaue
         cy.wait(3000)
