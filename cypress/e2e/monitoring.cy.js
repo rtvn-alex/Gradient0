@@ -1,5 +1,6 @@
 /// <reference types="cypress" />
 
+// НУЖНО УБРАТЬ КОММЕНТЫ!!!
 
 import {
     navigate,
@@ -19,7 +20,8 @@ import {
     metricsCompairing,
     zoomInAndOut,
     shouldHaveText,
-    numberFromString
+    numberFromString,
+    showElement
 } from "../../page-objects/functions.js"
 
 
@@ -88,8 +90,8 @@ describe('basic tests', () => {
     })
 
 
-    it('should check deleting and adding of filters via the list', () => {
-        // Нужно разобраться с подсчётом столбиков - см. ниже
+    it.only('should check deleting and adding of filters via the list', () => {
+        // Нужно разобраться с подсчётом - см. ниже
 
         clickAnElement('Настроить')
         waitForElement('div.DsShellPanelLocations')
@@ -129,12 +131,14 @@ describe('basic tests', () => {
             let orientsCheckboxesQuantity = doc.querySelectorAll('section.DsShellPanelLocations__MainSection:nth-of-type(2) label').length            // нижние чекбоксы
             let blocksQuantity = doc.querySelectorAll('div.GBarChart__Bar').length                                                                    // столбики
             let linesQuantity = doc.querySelectorAll('div.GBarChart__EtalonLine').length                                                              // линии
-            cy.log(graphsQuantity, blocksQuantity, linesQuantity, periodsCheckboxesQuantity, orientsCheckboxesQuantity)
+            cy.log(graphsQuantity, blocksQuantity, linesQuantity, periodsCheckboxesQuantity, orientsCheckboxesQuantity).then(() => {
 
             //expect(blocksQuantity).to.be.eq((periodsCheckboxesQuantity + 1) * graphsQuantity)                                                       // УЗНАТЬ, ПОЧЕМУ ВИДНЫ 4 ВМЕСТО 20 
 
-            expect(linesQuantity).to.satisfy((lines) => {
-                return lines === orientsCheckboxesQuantity * graphsQuantity || lines === graphsQuantity * 2
+                expect(linesQuantity).to.satisfy((lines) => {
+                    return lines === orientsCheckboxesQuantity * graphsQuantity || lines === graphsQuantity * 2                      // ПОЧЕМУ-ТО ИНОГДА НЕ СОВПАДАЕТ  И ВСЁ ВАЛИТСЯ -
+                                                                                                                                     // В НИЖНИХ ЧЕКБОКСАХ ПОЯВЛЯЕТСЯ 2021 ГОД
+                })
             })
         })
     })
@@ -184,14 +188,13 @@ describe('basic tests', () => {
 
 
     it('should check the "graph-table" switcher', () => {
-        //scrollDown()
         clickAnElement('Таблица')
         scrollDown()
-        cy.get('table.GradientTable__Table').should('exist').and('be.visible')
+        showElement('table.GradientTable__Table')
         waitForElementIsAbsent('li.GradientVizel__Chart')
         clickAnElement('График')
         scrollDown()
-        cy.get('li.GradientVizel__Chart').should('exist').and('be.visible')
+        showElement('li.GradientVizel__Chart')
         waitForElementIsAbsent('table.GradientTable__Table')
     })
 
@@ -205,7 +208,9 @@ describe('basic tests', () => {
     it('should check changing of actives', () => {
         // Тестируются только запросы;
         // Подактивы пока не переключаются - ВЫЯСНИТЬ, ПОЧЕМУ
-        const act = Cypress.env('someAct')
+        
+        //const act = Cypress.env('someAct')
+        const act = 'Хантос'
         clickAnElement('Ямал')
         clickAnElement(act)
         cy.wait(3000)
@@ -224,8 +229,9 @@ describe('basic tests', () => {
             '.GradientVizel__Change'
         ]
 
+        cy.wait(3000)
         arrows.forEach((selector) => {
-            cy.get(selector).click()
+            cy.get(selector, {timeout: 10000}).click()
             cy.get(selector).parents().siblings(selectorHidden).should('exist')
             cy.get(selector).click()
             cy.get(selector).parents().siblings(selectorHidden).should('not.exist')
@@ -242,6 +248,8 @@ describe('basic tests', () => {
             "+4": ["Four", " эффекта"],
             "+1": ["One", "Инициац"]
         })
+        cy.wait(3000)
+        cy.get('div.GradientVizel__Potencial_Change').click()
         for (let key in names) {
             let value = names[key][1]
             cy.contains(value).click()
@@ -265,7 +273,7 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check appearing of pop-ups when pointing on elements', () => {
+    it('should check appearing of pop-ups when pointing on elements', () => {
         waitForElement(':first-of-type > div.GradientVizel__Potencial_Chart_GBar_Container > div.GradientVizel__Potencial_Chart_GBar_Box')
         cy.document().then((doc) => {       
             let columns = doc.querySelectorAll(':first-of-type > div.GradientVizel__Potencial_Chart_GBar_Container > div.GradientVizel__Potencial_Chart_GBar_Box')

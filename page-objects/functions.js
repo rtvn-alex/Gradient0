@@ -253,7 +253,8 @@ export function endingsCheck() {
 
 
 export function numberFromString(str) {
-    return +str.split(' ')[0]
+    const space = /\s/
+    return +str.split(space)[0]
 }
 
 

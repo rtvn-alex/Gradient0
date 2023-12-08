@@ -7,9 +7,9 @@ import {
     clickAnElement,
     enterGradient,
     parseToJSON,
-    waitForElement,
     waitForElementIsAbsent,
-    shouldContainText
+    shouldContainText,
+    showElement
 } from "../../page-objects/functions.js"
 
 
@@ -31,7 +31,7 @@ describe('actions', () => {
     })
 
 
-    it('should check for correct changes after changing the measure unit', () => {
+    it.only('should check for correct changes after changing the measure unit', () => {
         cy.wait('@elDynamicChildren')
         cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
         clickAnElement(Cypress.env('someUnit'))
@@ -44,20 +44,20 @@ describe('actions', () => {
 
     it('should check the "graph-table" switcher', () => {
         clickAnElement('Таблица')
-        cy.get('table.GradientTable__Table').should('exist').and('be.visible')
+        showElement('table.GradientTable__Table')
         waitForElementIsAbsent('li.GradientVizel__Chart')
         clickAnElement('График')
-        cy.get('li.GradientVizel__Chart').should('exist').and('be.visible')
+        showElement('li.GradientVizel__Chart')
         waitForElementIsAbsent('table.GradientTable__Table')
     })
 
 
     it('should check the "data-ratings" switcher', () => {
         cy.get('.SwitchButtons:first-of-type > :last-child').click()
-        cy.get('section.RankedChart').should('exist').and('be.visible')
+        showElement('section.RankedChart')
         waitForElementIsAbsent('section.LineChart')
         cy.get('.SwitchButtons:first-of-type > :first-child').click()
-        cy.get('section.LineChart').should('exist').and('be.visible')
+        showElement('section.LineChart')
         waitForElementIsAbsent('section.RankedChart')
     })
 

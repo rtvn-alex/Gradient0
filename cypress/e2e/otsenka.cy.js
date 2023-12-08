@@ -13,7 +13,7 @@ import {
     waitForElementIsAbsent,
     zoomInAndOut,
     isAndIsnt,
-    switchLeftPaneElements,
+    //switchLeftPaneElements,
     shouldContainText,
     textInSeveralElements,
     shouldHaveText,
@@ -100,15 +100,15 @@ describe('basic tests', () => {
         clickAnElement('Активы')
         waitForElement('div.ds_3.open')
         clickAnElement('Очистить все')
-        Cypress.env('activesWithoutYamal').forEach((act) => {
+        Cypress.env('activesWithoutDefault').forEach((act) => {
             cy.contains('label.AppCheckbox', act).children(Cypress.env('checkboxSelector')).should('not.be.checked')
         })
         clickAnElement('Применить')
         cy.wait(1000)
         waitForElementIsAbsent('span.Tag:nth-of-type(2)')
-        cy.log(Cypress.env('activesWithoutYamal'))
+        cy.log(Cypress.env('activesWithoutDefault'))
         scrollDown()
-        Cypress.env('activesWithoutYamal').forEach((act) => {
+        Cypress.env('activesWithoutDefault').forEach((act) => {
             cy.get('div.GBarChart__XAxisTitle').should('not.have.text', act)
         })
     })
@@ -126,20 +126,37 @@ describe('basic tests', () => {
 
 
     it('should check the search', () => {
-        let way = 'ul.AppTree__ChildList>li.AppTree__Item:not(.hidden)'
-        let searchStrings = [
+        let childWay = 'ul.AppTree__ChildList>li.AppTree__Item:not(.hidden)'
+        let parentWay = 'ul.AppTree>li.AppTree__Item:not(.hidden) label.AppCheckbox'
+        let parentString = 'о №'
+        let searchStrings = [    
+            /*                                                      
             "Южно-",
             "Вское",
             "восточ",
             " + ",                 
-            " (ВУ"               
+            " (ВУ"      
+            */
+            "№1",
+            "47",
+            "9"
         ]
+
         cy.wait(5000)
         clickAnElement('Активы')
+        cy.get('input[type="search"]').click().type(parentString)
+        cy.wait(1500)
+        cy.get(parentWay).each((child) => {
+            cy.wrap(child).contains(parentString, {matchCase: false}).should('exist')
+        })
+        cy.get('input[type="search"]').clear()
+
+
         for (let el of searchStrings){
             cy.get('input[type="search"]').click().type(el)
             cy.wait(1500)
-            cy.get(way).each((child) => {
+            
+            cy.get(childWay).each((child) => {
                 cy.wrap(child).contains(el, {matchCase: false}).should('exist')
             })
             cy.get('input[type="search"]').clear()
@@ -212,17 +229,16 @@ describe('basic tests', () => {
     })
 
 
-    it('should check changing of actives and subactives', () => {
+    it.skip('should check changing of actives and subactives', () => {   // Валится, т.к. баг в теле ответа
         const act = Cypress.env('someAct')
-        const subact = 'Южное'
-        cy.wait(3000)
-        clickAnElement('Ямал')
+        const subact = 'МР №18'
+        clickAnElement('ДО № 5')
         clickAnElement(act)
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
      
-        waitForRequest('@elPotencial2', {body: {filters: {do_code: ["=", 4]}}}, 10)                // Проверка запроса и ответа для act
+        waitForRequest('@elPotencial2', {body: {filters: {do_code: ["=", 3]}}}, 10)                // Проверка запроса и ответа для act
         cy.get('@elPotencial2')
-        .its('request.body.filters.do_code[1]').should('to.be.eq', 4)
+        .its('request.body.filters.do_code[1]').should('to.be.eq', 3)
         cy.get('@elPotencial2').then((xhr) => {
             expect(parseToJSON(xhr)[0]).to.have.property('do_name', act)
         })

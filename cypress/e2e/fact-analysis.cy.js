@@ -78,10 +78,12 @@ describe('basic tests', () => {
     })
 
 
-    it('should check changing of actives', () => {
+    it.only('should check changing of actives', () => {
         // Тестируются только запросы;
         // Подактивы пока не переключаются - ВЫЯСНИТЬ, ПОЧЕМУ
-        const act = Cypress.env('someAct')
+
+        //const act = Cypress.env('someAct')
+        const act = 'Хантос'
         clickAnElement('Ямал')
         clickAnElement(act)
         cy.wait(3000)
@@ -101,7 +103,6 @@ describe('basic tests', () => {
             lines.forEach((line) => {
                 cy.get(line).siblings('.GbarHorizontal__Percent').find(':nth-child(11) > .GbarHorizontal__Units_Value').then((val) => {
                     let num = numberFromString(val.text())
-                    cy.log(num)
                     if (num != 0) {
                         cy.get(line).find('.BackgroundStandart').then((firstLine) => {
                             popupsCheck(firstLine)
@@ -130,15 +131,13 @@ describe('basic tests', () => {
     })
     
 
-    it.skip('should check directing to Modeling page', () => {
-        // Блокируется ошибкой в коде - карточка
-        // https://wekan.spb.luxms.com/b/JwBS9R9iSvJcGEzeK/gradient/2WZEpHEwSLBRfXaue
+    it.only('should check directing to Modeling page', () => {
         cy.wait(3000)
-        cy.get('div.GbarHorizontal__Line').first().trigger('mouseenter')
-        clickAnElement('Подробнее', { force: true })
+        cy.get('div.GbarHorizontal__Line').first().trigger('mouseenter')                   // эту строчку лучше не удалять
+        cy.get('div.GbarHorizontal:first-of-type .BackgroundMain').trigger('mouseenter')
+        clickAnElement('Подробнее')
         cy.wait(3000)
-        cy.url().should('contain.text', 'ds_brd_gradient_6')
+        cy.url().should('include', 'ds_brd_gradient_6')
+        shouldContainText('.DashBoardPicker button.active', 'Моделирование')
     })
-
-
 })
