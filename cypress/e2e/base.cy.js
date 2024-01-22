@@ -56,13 +56,13 @@ describe('demo actions', () => {
 
     it('should switch colour themes', () => {
         clickAnElement('Аналитика')
-        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')        
-        cy.get(".DsShellHeader__ThemeSwitcher>svg").click()
-        cy.wait(1500)
-        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
+        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')        
         cy.get(".DsShellHeader__ThemeSwitcher>svg").click()
         cy.wait(1500)
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'dark')
+        cy.get(".DsShellHeader__ThemeSwitcher>svg").click()
+        cy.wait(1500)
+        cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')
     })
 
 
@@ -79,7 +79,7 @@ describe('demo actions', () => {
 
 
     it('should change a subactive', () => {
-        let str = 'МР №35'
+        let str = 'МР № 35'
         clickAnElement('Оценка')
         cy.wait(3000)
         clickAnElement('Не выбрано')

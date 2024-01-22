@@ -31,7 +31,7 @@ describe('actions', () => {
     })
 
 
-    it.only('should check for correct changes after changing the measure unit', () => {
+    it('should check for correct changes after changing the measure unit', () => {
         cy.wait('@elDynamicChildren')
         cy.get('div.MeasureSelect__Select span.AppSelect__TextField').click()
         clickAnElement(Cypress.env('someUnit'))

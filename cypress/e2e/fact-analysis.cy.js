@@ -78,9 +78,9 @@ describe('basic tests', () => {
     })
 
 
-    it.only('should check changing of actives', () => {
+    it('should check changing of actives', () => {
         // Тестируются только запросы;
-        // Подактивы пока не переключаются - ВЫЯСНИТЬ, ПОЧЕМУ
+        // Подактивы (пока?) не переключаются
 
         //const act = Cypress.env('someAct')
         const act = 'Хантос'
@@ -131,7 +131,7 @@ describe('basic tests', () => {
     })
     
 
-    it.only('should check directing to Modeling page', () => {
+    it('should check directing to Modeling page', () => {
         cy.wait(3000)
         cy.get('div.GbarHorizontal__Line').first().trigger('mouseenter')                   // эту строчку лучше не удалять
         cy.get('div.GbarHorizontal:first-of-type .BackgroundMain').trigger('mouseenter')

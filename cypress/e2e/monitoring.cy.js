@@ -1,6 +1,5 @@
 /// <reference types="cypress" />
 
-// НУЖНО УБРАТЬ КОММЕНТЫ!!!
 
 import {
     navigate,
@@ -36,7 +35,7 @@ describe('basic tests', () => {
         clickAnElement('Мониторинг')
         //cy.wait(5000)
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?units').as('dataUnits')
-        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial')
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elPotencial').as('elPotencial')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_4/data?elMonitoring').as('elMonitoring')
     })
 
@@ -80,21 +79,21 @@ describe('basic tests', () => {
         cy.contains('div.HeaderFilter', fact19).children('button').click()
         cy.contains('div.HeaderFilter', co26).children('button').click()
         scrollDown()
-        cy.contains(fact19).should('not.be.visible')      
+        cy.contains('div.GBarChart__XAxisTitle', fact19).should('not.exist')      
         cy.document().then((doc) => {
             let etalons = doc.querySelectorAll('span.GBarChart__EtalonTitle')
             if (etalons.length > 8) {
-                cy.contains(co26).should('not.be.visible')
+                cy.contains('span.GBarChart__EtalonTitle', co26).should('not.exist')
             }
         })
     })
 
 
-    it.only('should check deleting and adding of filters via the list', () => {
-        // Нужно разобраться с подсчётом - см. ниже
+    it('should check deleting and adding of filters via the list', () => {                        //ПАДАЕТ, забагованный код в комментах
 
         clickAnElement('Настроить')
         waitForElement('div.DsShellPanelLocations')
+        cy.wait(3000)
         clickAnElement('Очистить все')
 
         cy.document().then((doc) => {
@@ -124,21 +123,21 @@ describe('basic tests', () => {
         
         clickAnElement('Применить')
         scrollDown()
+        cy.wait(3000)
         cy.document().then((doc) => {
-            cy.wait(3000)
             let graphsQuantity = doc.querySelectorAll('div.GBarChart__Main').length                                                                   // графики
             let periodsCheckboxesQuantity = doc.querySelectorAll('section.DsShellPanelLocations__MainSection:first-of-type label').length             // верхние чекбоксы
             let orientsCheckboxesQuantity = doc.querySelectorAll('section.DsShellPanelLocations__MainSection:nth-of-type(2) label').length            // нижние чекбоксы
             let blocksQuantity = doc.querySelectorAll('div.GBarChart__Bar').length                                                                    // столбики
             let linesQuantity = doc.querySelectorAll('div.GBarChart__EtalonLine').length                                                              // линии
             cy.log(graphsQuantity, blocksQuantity, linesQuantity, periodsCheckboxesQuantity, orientsCheckboxesQuantity).then(() => {
-
-            //expect(blocksQuantity).to.be.eq((periodsCheckboxesQuantity + 1) * graphsQuantity)                                                       // УЗНАТЬ, ПОЧЕМУ ВИДНЫ 4 ВМЕСТО 20 
+                //cy.wait(1000)
+                expect(blocksQuantity).to.be.eq((periodsCheckboxesQuantity + 1) * graphsQuantity) 
 
                 expect(linesQuantity).to.satisfy((lines) => {
-                    return lines === orientsCheckboxesQuantity * graphsQuantity || lines === graphsQuantity * 2                      // ПОЧЕМУ-ТО ИНОГДА НЕ СОВПАДАЕТ  И ВСЁ ВАЛИТСЯ -
+                    return lines === orientsCheckboxesQuantity * graphsQuantity || lines === graphsQuantity * 2                      // БАГ - ПОЧЕМУ-ТО ИНОГДА НЕ СОВПАДАЕТ  И ВСЁ ВАЛИТСЯ -
                                                                                                                                      // В НИЖНИХ ЧЕКБОКСАХ ПОЯВЛЯЕТСЯ 2021 ГОД
-                })
+                })               
             })
         })
     })

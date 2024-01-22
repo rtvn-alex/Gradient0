@@ -33,7 +33,8 @@ describe('basic tests', () => {
         auth()
         enterGradient()
         clickAnElement('Оценка')
-        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2') 
+        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2') 
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?elPotencial').as('elPotencial2')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?el').as('dataEl')
     })
 
@@ -48,6 +49,7 @@ describe('basic tests', () => {
 
 
     it('should check "plan+fact" switchers', () => {
+        cy.wait(1500)
         cy.get('button.PeriodsSelector__Button:nth-of-type(4)', {timeout:10000}).click()
         shouldContainText('div.GradientVizel__Potencial_Title', '9+3')
         shouldContainText('div.GradientVizel__Title', '9+3')
@@ -100,15 +102,15 @@ describe('basic tests', () => {
         clickAnElement('Активы')
         waitForElement('div.ds_3.open')
         clickAnElement('Очистить все')
-        Cypress.env('activesWithoutDefault').forEach((act) => {
+        Cypress.env('activesWithoutYamal').forEach((act) => {
             cy.contains('label.AppCheckbox', act).children(Cypress.env('checkboxSelector')).should('not.be.checked')
         })
         clickAnElement('Применить')
         cy.wait(1000)
         waitForElementIsAbsent('span.Tag:nth-of-type(2)')
-        cy.log(Cypress.env('activesWithoutDefault'))
+        cy.log(Cypress.env('activesWithoutYamal'))
         scrollDown()
-        Cypress.env('activesWithoutDefault').forEach((act) => {
+        Cypress.env('activesWithoutYamal').forEach((act) => {
             cy.get('div.GBarChart__XAxisTitle').should('not.have.text', act)
         })
     })
@@ -128,7 +130,7 @@ describe('basic tests', () => {
     it('should check the search', () => {
         let childWay = 'ul.AppTree__ChildList>li.AppTree__Item:not(.hidden)'
         let parentWay = 'ul.AppTree>li.AppTree__Item:not(.hidden) label.AppCheckbox'
-        let parentString = 'о №'
+        let parentString = 'тО'
         let searchStrings = [    
             /*                                                      
             "Южно-",
@@ -137,7 +139,7 @@ describe('basic tests', () => {
             " + ",                 
             " (ВУ"      
             */
-            "№1",
+            "№ 1",
             "47",
             "9"
         ]
@@ -165,11 +167,13 @@ describe('basic tests', () => {
 
 
     it('should check the "graph-table" switcher', () => {
+        cy.wait(1500)
         scrollDown()
         clickAnElement('Таблица')
         cy.get('table.GradientTable__Table').should('exist').and('be.visible')
         waitForElementIsAbsent('li.GradientVizel__Chart')
         clickAnElement('График')
+        cy.wait(1500)
         cy.get('li.GradientVizel__Chart').should('exist').and('be.visible')
         waitForElementIsAbsent('table.GradientTable__Table')
     })
@@ -178,7 +182,7 @@ describe('basic tests', () => {
     it('should check the normalisation switcher', () => {
         let namesList = ['С нормализацией', 'Без нормализации']
         checkNormalisation(namesList[0])
-        cy.get('.norm .GBarChart__Bar').should('have.css', 'background').should('contain', 'rgb(24, 175, 112)')
+        cy.get('.norm .GBarChart__Bar').should('have.css', 'background').should('contain', 'rgb(24, 176, 113)')
         checkNormalisation(namesList[1])
         cy.get('div.GBarChart__Bar').should('have.css', 'background').should('contain', 'rgb(36, 175, 190)')
     })
@@ -229,16 +233,17 @@ describe('basic tests', () => {
     })
 
 
-    it.skip('should check changing of actives and subactives', () => {   // Валится, т.к. баг в теле ответа
+    it.skip('should check changing of actives and subactives', () => {                              // ПАДАЕТ ИЗ-ЗА БАГА, В СТРОКЕ 245 ПРИХОДИТ "ДО № 4"
         const act = Cypress.env('someAct')
-        const subact = 'МР №18'
-        clickAnElement('ДО № 5')
+        const subact = 'МР № 18'
+        cy.wait(3000)
+        clickAnElement('Ямал')
         clickAnElement(act)
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2')
      
-        waitForRequest('@elPotencial2', {body: {filters: {do_code: ["=", 3]}}}, 10)                // Проверка запроса и ответа для act
+        waitForRequest('@elPotencial2', {body: {filters: {do_code: ["=", 4]}}}, 10)                // Проверка запроса и ответа для act
         cy.get('@elPotencial2')
-        .its('request.body.filters.do_code[1]').should('to.be.eq', 3)
+        .its('request.body.filters.do_code[1]').should('to.be.eq', 4)
         cy.get('@elPotencial2').then((xhr) => {
             expect(parseToJSON(xhr)[0]).to.have.property('do_name', act)
         })
@@ -265,7 +270,7 @@ describe('basic tests', () => {
         .should('not.exist')
 
         scrollDown()                                                              // Первый по порядку во всех нижних диаграммах
-        cy.wait(100)
+        cy.wait(1000)
         textInSeveralElements(subact, 'div.first>.GBarChart__XAxisTitle')
     })
 })

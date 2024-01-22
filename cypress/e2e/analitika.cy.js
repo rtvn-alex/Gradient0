@@ -45,6 +45,7 @@ describe('basic tests', () => {
     it('should check changing of names after choosing a period from the list', () => {
         cy.get('button.last').click()
         cy.get('li.MainPane__PeriodsSelectItem:nth-of-type(5):last').click() 
+        cy.wait(3000)
         waitForElementIsAbsent('button.PeriodsSelector__Button.active')
         shouldContainText('.GradientVizel__Title', '4+8')
     })
@@ -59,7 +60,8 @@ describe('basic tests', () => {
 
     it('should change the year', () => {
         cy.get('div.CustomDatePickerTrigger').click()
-        cy.get('div.react-datepicker__year-text').eq(4).click()       
+        cy.get('div.react-datepicker__year-text').eq(4).click()
+        cy.wait(1500)       
         shouldContainText('.GradientVizel__Title', '2021')
         waitForElementIsAbsent('div.react-datepicker__year--container')
     })

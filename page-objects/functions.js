@@ -175,6 +175,7 @@ export function waitForRequest(alias, partialRequest, maxRequests, level = 0) {
     if (level === maxRequests) {
         throw `${maxRequests} requests exceeded`         // fail the test
     }
+    // cy.pause()
     cy.wait(alias).then(xhr => {
         cy.log(`Request number ${level+1}`)
         const isMatch = Cypress._.isMatch(xhr.request, partialRequest)
