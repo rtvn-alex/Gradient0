@@ -31,7 +31,7 @@ describe('basic tests', () => {
     beforeEach(() => {
         navigate()
         auth()
-        enterGradient()
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Оценка')
         //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/koob/data?elPotencial').as('elPotencial2') 
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_3/data?elPotencial').as('elPotencial2')

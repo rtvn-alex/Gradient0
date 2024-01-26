@@ -26,9 +26,9 @@ export function shouldHaveText(selector, text) {
 }
 
 
-export function enterGradient() {
+export function enterGradient(chapter) {
     clickAnElement('Визуализации')
-    clickAnElement('LС Нефть')
+    clickAnElement(chapter)
 }
 
 
@@ -265,3 +265,4 @@ export function numberFromElementText(selector) {
         return num
     })
 }
+

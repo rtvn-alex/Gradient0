@@ -17,7 +17,7 @@ describe('actions', () => {
     beforeEach(() => {
         navigate()
         auth()
-        enterGradient()
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Динамика')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_9/data?elDynamicChildren').as('elDynamicChildren')
         cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_9/data?elDynamic').as('elDynamic')
@@ -71,6 +71,7 @@ describe('actions', () => {
     
     
     it('should check lines width changes after changing of actives and subactives', () => {
+        cy.get('div.LineChart__Lines line[stroke="#108E9C"]').should('have.attr', 'stroke-width').and('equal', '3px')
         clickAnElement('Ямал')
         clickAnElement('СН-МНГ')
         cy.get('div.LineChart__Lines line[stroke="#108E9C"]').should('have.attr', 'stroke-width').and('equal', '7px')

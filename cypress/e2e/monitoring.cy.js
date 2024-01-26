@@ -30,7 +30,7 @@ describe('basic tests', () => {
         //cy.wait(3000)
         auth()
         //cy.wait(3000)
-        enterGradient()
+        enterGradient(Cypress.env('lcNeft'))
         //cy.wait(3000)
         clickAnElement('Мониторинг')
         //cy.wait(5000)

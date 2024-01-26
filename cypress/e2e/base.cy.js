@@ -19,13 +19,13 @@ describe('demo actions', () => {
     beforeEach(() => {
         navigate()
         auth()
-        enterGradient()
     })
 
 
     it('should turn the screens through', () => {
         let basic = Cypress.env('diagramSelector')
         let alter = Cypress.env('diagramSelectorAlternative')
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Оценка потенциала')
         showElement(alter)
         cy.wait(1500)
@@ -54,8 +54,22 @@ describe('demo actions', () => {
     })
 
 
+    it.only('should turn the CAPEX screens through', () => {
+        let select = Cypress.env('diagramSelectorAlternative')
+        enterGradient(Cypress.env('capexSkv'))
+        cy.wait(1500)
+        clickAnElement('Динамика метрик')
+        showElement(select)
+        cy.wait(1500)
+        clickAnElement('Оценка потенциала')
+        showElement(select)
+    })
+
+
     it('should switch colour themes', () => {
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Аналитика')
+        cy.wait(1500)
         cy.get('body.noselect').should('have.attr', 'data-theme').and('equal', 'light')        
         cy.get(".DsShellHeader__ThemeSwitcher>svg").click()
         cy.wait(1500)
@@ -67,8 +81,9 @@ describe('demo actions', () => {
 
 
     it('should change an active', () => {
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Аналитика')
-        cy.wait(1500)
+        cy.wait(3000)
         clickAnElement('Ямал')
         clickAnElement('Хантос')
         shouldContainText('.GBarChart__Main .GBarChart__XAxisBlock.first', 'Хантос')
@@ -80,15 +95,19 @@ describe('demo actions', () => {
 
     it('should change a subactive', () => {
         let str = 'МР № 35'
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Оценка')
         cy.wait(3000)
-        clickAnElement('Не выбрано')
+        //waitForElement('.DsShellHeader > :nth-child(6)')
+        cy.get(':nth-child(6) > .AppSelect__TextField').click()
+       //clickAnElement('Не выбрано')
         clickAnElement(str)
         shouldHaveText('div.MainPane__TagsGroup span:nth-child(1) span', str)
     })
 
 
     it('should open the Download window', () => {
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Аналитика')
         cy.wait(1500)
         cy.get('div.UserBadge__Name', {timeout:10000}).click()
@@ -98,6 +117,7 @@ describe('demo actions', () => {
     
     
     it('should check downloading of PDF', () => {
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Оценка')
         cy.wait(3000)
         cy.get('div.UserBadge__Name', {timeout:10000}).click()
@@ -107,6 +127,7 @@ describe('demo actions', () => {
 
 
     it('should switch the processes and articles', () => {
+        enterGradient(Cypress.env('lcNeft'))
         clickAnElement('Аналитика')
         cy.wait(3000)
         switchLeftPaneElements('div.Header div', Cypress.env('processes'))
