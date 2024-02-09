@@ -36,7 +36,7 @@ describe('actions', () => {
     })
 
 
-    it('should check the "graph-table" switcher', () => {
+    it.only('should check the "graph-table" switcher', () => {                         // БАГИ???
         clickAnElement('Таблица')
         showElement('table.GradientTable__Table')
         waitForElementIsAbsent('li.GradientVizel__Chart')
@@ -71,7 +71,7 @@ describe('actions', () => {
 
 
     it('should check changing of actives in ratings mode', () => {
-        cy.get('.SwitchButtons:first-of-type > :last-child').click()
+        cy.get('.SwitchButtons:first-of-type > :last-child', {timeout: 8000}).click()
         shouldContainText('.active>span.RankedChart__Label__title', Cypress.env('defaultAct'))
         clickAnElement(Cypress.env('defaultAct'))
         clickAnElement(Cypress.env('someAct'))
@@ -117,7 +117,7 @@ describe('actions', () => {
     })
 
 
-    it.only('should check wells switchers', () => {
+    it('should check wells switchers', () => {
         cy.get('button.GradientVizel__Scatter_Box_Btn').first().click()
         waitForElementIsAbsent('button.GradientVizel__Scatter_Box_Btn_Active')
         cy.wait(3000)
@@ -127,19 +127,43 @@ describe('actions', () => {
                 cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_13/data?loadDataCapex').as('loadDataCapex')
                 cy.get(buttons).eq(i).click()
                 cy.wait(1000)                            //ЭТУ ЗАДЕРЖКУ МОЖНО УВЕЛИЧИВАТЬ; НАДО ПРОВЕРИТЬ, КАКАЯ МИНИМАЛЬНАЯ ВОЗМОЖНА БЕЗ ФЕЙЛОВ
-                
                 cy.wait('@loadDataCapex').its('request.body.filters.skvazhiny_corp_code').should('have.length', i + 1)
-                
-                //.its('request.body.filters.skvazhiny_corp_code').should('have.length', i + 1)
             }
-            
         })
-        // cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_13/data?loadDataCapex').as('loadDataCapex')
-        // cy.get('@loadDataCapex')
-        // for ()
-        // cy.get('button.GradientVizel__Scatter_Box_Btn:not(.GradientVizel__Scatter_Box_Disabled>.GradientVizel__Scatter_Box_Btn)').eq(2).click()
     })
 
+
+    it('should check all wells types switcher', () => {
+        //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_13/data?loadDataCapex').as('loadDataCapex')
+        cy.wait(3000)
+        clickAnElement('Гибкий')
+       //cy.wait(3000)
+        cy.get('input.Switch-Input').click()
+        
+        
+        cy.wait(1000)
+        //waitForRequest('@loadDataCapex', {body: {filters: {tip_skvazhiny: A}}}, 10)
+        //cy.get('@loadDataCapex').its('request.body.filters.tip_skvazhiny').should('have.length', 4)     
+        cy.get('div.ChoiceGroup').last().children('label.ChoiceGroup-Label:not(.ChoiceGroup-Label_checked)').should('not.exist')
+        waitForElementIsAbsent('div.Slider')
+        cy.get('input.Switch-Input').click()
+        /*cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_13/data?loadDataCapex').as('loadDataCapex')
+        cy.get('@loadDataCapex').its('request.body.filters.tip_skvazhiny').should('have.length', 2)     
+        */
+        cy.get('div.ChoiceGroup').eq(1).children('label.ChoiceGroup-Label:not(.ChoiceGroup-Label_checked)').should('exist')
+        waitForElement('div.Slider')
+    })
+
+
+    it('should check wells switcher in the flexible mode', () => {
+        cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_13/data?loadDataCapex').as('loadDataCapex')
+        cy.wait(3000)
+        clickAnElement('Гибкий')
+        cy.wait(3000)
+        clickAnElement('ГС')       
+        waitForRequest('@loadDataCapex', {body: {filters: {tip_skvazhiny: ["=", "ГС"]}}}, 10)
+        cy.get('@loadDataCapex').its('request.body.filters.tip_skvazhiny[1]').should('eq', 'ГС')
+    })
 
 
 })
