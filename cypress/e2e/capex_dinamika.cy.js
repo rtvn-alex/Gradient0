@@ -13,7 +13,8 @@ import {
     waitForElementIsAbsent,
     parseToJSON,
     isAndIsnt,
-    waitForRequest
+    waitForRequest,
+    takeProperty
 } from "../../page-objects/functions.js"
 
 
@@ -36,7 +37,7 @@ describe('actions', () => {
     })
 
 
-    it.only('should check the "graph-table" switcher', () => {                         // БАГИ???
+    it('should check the "graph-table" switcher', () => {                         // БАГИ???
         clickAnElement('Таблица')
         showElement('table.GradientTable__Table')
         waitForElementIsAbsent('li.GradientVizel__Chart')
@@ -163,6 +164,44 @@ describe('actions', () => {
         clickAnElement('ГС')       
         waitForRequest('@loadDataCapex', {body: {filters: {tip_skvazhiny: ["=", "ГС"]}}}, 10)
         cy.get('@loadDataCapex').its('request.body.filters.tip_skvazhiny[1]').should('eq', 'ГС')
+    })
+
+
+    it.skip('should check the top scroll', () => {                                                     // БАГ - НУЖНО ПРОВЕРИТЬ НА ОЦЕНКЕ ПОТЕНЦИАЛА, ТАМ РАБОТАЕТ
+        cy.wait(3000)
+        clickAnElement('Гибкий')
+        cy.wait(3000)
+        takeProperty('div.TextField:first-child input.TextField-Input', 'value')
+        //cy.get('input.TextField-Input').first().should('have.attr', 'max')
+        //cy.log(val)
+
+        // cy.get('button[aria-label="0-button"]')
+        //   .invoke('val', 3000)
+        //   .trigger('input')
+        // //takeProperty('div.TextField:first-child input.TextField-Input', 'value').and('not.eq', 0)
+        // cy.wait(1500)
+        // cy.get('input.TextField-Input').first().should('have.attr', 'value').and('be.not.eq', '0')
+
+          /*.trigger('mousemove')
+          .trigger('mouseDown')
+          .trigger('mousemove
+          ', {})
+          */ 
+         /*                                                // НЕМНОГО РАБОТАЕТ
+        cy.get('button[aria-label="0-button"]')
+          .trigger('mousedown')
+        cy.get('div.SliderLine_view_default').trigger('mousemove')
+        .trigger('mouseup', {force: true})
+        */
+    })
+
+
+    it.only('should check the top inputs', () => {
+        cy.wait(3000)
+        clickAnElement('Гибкий')
+        cy.wait(1000)
+        takeProperty('div.TextField:first-child input.TextField-Input', 'value', 0)
+        
     })
 
 

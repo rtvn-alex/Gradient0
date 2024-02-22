@@ -266,3 +266,29 @@ export function numberFromElementText(selector) {
     })
 }
 
+
+export function takeProperty(selector, property, value, equal=true) {
+    if (value && equal) {
+        cy.get(selector).should('have.attr', property).and('be.eq', value)
+    }
+    else if (value && equal === false) {
+        cy.get(selector).should('have.attr', property).and('not.eq', value)
+    }
+    else {
+        cy.get(selector).should('have.attr', property)
+    }
+}
+
+
+export function dragAndDrop(selector, x, y) {
+    cy.get(selector)
+        .trigger('mousedown')
+        .trigger('mousemove', {clientX: x, clientY: y, force: true})
+        .wait(1000)                                            // Непонятно, но зачем-то надо
+        .trigger('mouseup', {force: true})
+}
+
+
+export function typeIt(selector, text) {
+    cy.get(selector).clear().type(text)
+}
