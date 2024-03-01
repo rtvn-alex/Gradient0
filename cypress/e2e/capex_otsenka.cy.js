@@ -21,6 +21,13 @@ import {
 
 
 describe('actions', () => {
+
+    let inputLeft = '.TextField:nth-child(1) .TextField-Input'
+    let inputRight = '.TextField:nth-child(2) .TextField-Input'
+    let sliderLeft = 'button[aria-label="0-button"]'
+    let sliderRight = 'button[aria-label="1-button"]'
+
+    
     beforeEach(() => {
         navigate()
         auth()
@@ -31,84 +38,47 @@ describe('actions', () => {
     })
 
 
-    it('should check the top scroll', () => {                                                     // БАГ - НУЖНО ПРОВЕРИТЬ НА ОЦЕНКЕ ПОТЕНЦИАЛА, ТАМ РАБОТАЕТ
+    it.only('should check the top scroll', () => {
         cy.wait(3000)
         clickAnElement('Гибкий')
         cy.wait(1000)
-        //cy.get('input.TextField-Input').first().should('have.attr', 'max')
-        //cy.log(val)
-/*
-        cy.get('button[aria-label="0-button"]')
-          .invoke('val', 3000)
-          .trigger('change', { force: true })
-        */
-        // //takeProperty('div.TextField:first-child input.TextField-Input', 'value').and('not.eq', 0)
-        // cy.wait(1500)
-        // cy.get('input.TextField-Input').first().should('have.attr', 'value').and('be.not.eq', '0')
-
-          /*.trigger('mousemove')
-          .trigger('mouseDown')
-          .trigger('mousemove
-          ', {})
-          */ 
-                                                         // НЕМНОГО РАБОТАЕТ
-                                                         /*
-        cy.get('button[aria-label="0-button"]')
-          .trigger('mousedown')
-          .trigger('mousemove', {clientX: 150})
-          .trigger('mousemove', {clientX: 50})     //clientY: 292
-          .trigger('mouseup', {force: true})
-          .click()
-          */
-/*
-        cy.get('button[aria-label="0-button"]')
-          .trigger('mousedown')
-          .trigger('mousemove', {clientX: 50, force: true})     //clientY: 292
-          .trigger('mouseup', {force: true})
-
-        cy.get('button[aria-label="1-button"]')
-          .trigger('mousedown')
-          .trigger('mousemove', {clientX: 250, force: true})     //clientY: 292
-          .wait(1000)                                            // Непонятно, но зачем-то надо
-          .trigger('mouseup', {force: true})   
-          */
-        
-          //dragAndDrop('button[aria-label="0-button"]', 50)
-          //dragAndDrop('button[aria-label="1-button"]', 250)
-          
-        cy.get('input.TextField-Input').first().should('have.attr', 'value').then((valLeft) => {
-            //cy.log(val)
-            dragAndDrop('button[aria-label="0-button"]', 50)
-            cy.get('input.TextField-Input').last().should('have.attr', 'value').then((valRight) => {
-                dragAndDrop('button[aria-label="1-button"]', 250)
-                cy.get('input.TextField-Input').first().should('have.attr', 'value').and('not.eq', valLeft)
-                cy.get('input.TextField-Input').last().should('have.attr', 'value').and('not.eq', valRight)
+        cy.get(inputLeft).should('have.attr', 'value').then((valLeft) => {
+            // ТЕСТИТЬ ЗАПРОСЫ ПРИ ОТСУТСТВИИ КОНКРЕТНЫХ ЗНАЧЕНИЙ НЕОПРАВДАННО СЛОЖНО
+            //cy.intercept('https://dev-gradient.luxmsbi.com/api/v3/ds_brd_gradient_13/data?loadDataCapex').as('loadDataCapex')    
+            dragAndDrop(sliderLeft, 50)
+            //waitForRequest('@loadDataCapex', {body: {filters: {othod_ot_vertikali: [`=`, ``]}}}, 10)
+            //cy.get('@loadDataCapex').its('request.body.filters.othod_ot_vertikali[1]').should('not.eq', valLeft)
+            cy.get(inputRight).should('have.attr', 'value').then((valRight) => {
+                dragAndDrop(sliderRight, 250)
+                //cy.wait('@loadDataCapex').its('request.body.filters.othod_ot_vertikali[2]').should('not.eq', valRight)
+                takeProperty(inputLeft, 'value', valLeft, false)
+                takeProperty(inputRight, 'value', valRight, false)
             })
         })
     })
 
 
-    it.only('should check the top inputs', () => {
+    it('should check the top inputs', () => {
         cy.wait(3000)
         clickAnElement('Гибкий')
         cy.wait(1000)
-        cy.get('input.TextField-Input').last().should('have.attr', 'value').then((valRight) => {
+        cy.get(inputRight).should('have.attr', 'value').then((valRight) => {
             let val = Number(valRight)
             let numRight = ~~ (val * 0.9)
             let numLeft = ~~ (val * 0.1)
             let textRight = numRight.toString()
             let textLeft = numLeft.toString()
 
-            cy.get('button[aria-label="1-button"]').should('have.attr', 'aria-valuenow').then((posRight) => {
-                typeIt('div.TextField:last-child input.TextField-Input', textRight)
+            cy.get(sliderRight).should('have.attr', 'aria-valuenow').then((posRight) => {
+                typeIt(inputRight, textRight)
                 cy.wait(500)
-                cy.get('button[aria-label="1-button"]').should('have.attr', 'aria-valuenow').and('not.eq', posRight)
+                takeProperty(sliderRight, 'aria-valuenow', posRight, false)
             })
 
-            cy.get('button[aria-label="0-button"]').should('have.attr', 'aria-valuenow').then((posLeft) => {
-              typeIt('div.TextField:first-child input.TextField-Input', textLeft)
-              cy.wait(500)
-              cy.get('button[aria-label="0-button"]').should('have.attr', 'aria-valuenow').and('not.eq', posLeft)
+            cy.get(sliderLeft).should('have.attr', 'aria-valuenow').then((posLeft) => {
+                typeIt(inputLeft, textLeft)
+                cy.wait(500)
+                takeProperty(sliderLeft, 'aria-valuenow', posLeft, false)
           })
         })
     })

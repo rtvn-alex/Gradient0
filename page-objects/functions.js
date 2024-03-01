@@ -271,7 +271,7 @@ export function takeProperty(selector, property, value, equal=true) {
     if (value && equal) {
         cy.get(selector).should('have.attr', property).and('be.eq', value)
     }
-    else if (value && equal === false) {
+    else if (value && (equal === false)) {
         cy.get(selector).should('have.attr', property).and('not.eq', value)
     }
     else {
@@ -290,5 +290,8 @@ export function dragAndDrop(selector, x, y) {
 
 
 export function typeIt(selector, text) {
-    cy.get(selector).clear().type(text)
+    cy.get(selector)
+      .clear()
+      .type('{rightarrow}')
+      .type(text)
 }
